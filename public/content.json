@@ -1,0 +1,424 @@
+{
+  "version": "2026-10-27.1",
+  "title": "컴공으로 살아남기",
+  "subtitle": "대학생 키우기",
+  "stats": [
+    {
+      "id": "study",
+      "label": "학업",
+      "group": "공부",
+      "initial": 0,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "making",
+      "label": "제작 경험",
+      "group": "공부",
+      "initial": 0,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "teamwork",
+      "label": "협업",
+      "group": "공부",
+      "initial": 0,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "inquiry",
+      "label": "탐구",
+      "group": "공부",
+      "initial": 0,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "money",
+      "label": "자금",
+      "group": "생활",
+      "initial": 5,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "relations",
+      "label": "관계",
+      "group": "생활",
+      "initial": 5,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "mental",
+      "label": "멘탈",
+      "group": "생활",
+      "initial": 5,
+      "min": 0,
+      "max": 10
+    }
+  ],
+  "profile": {
+    "genders": [
+      {
+        "id": "male",
+        "label": "남자"
+      },
+      {
+        "id": "female",
+        "label": "여자"
+      }
+    ],
+    "mbti": [
+      "ENFJ",
+      "ENFP",
+      "ENTJ",
+      "ENTP",
+      "ESFJ",
+      "ESFP",
+      "ESTJ",
+      "ESTP",
+      "INFJ",
+      "INFP",
+      "INTJ",
+      "INTP",
+      "ISFJ",
+      "ISFP",
+      "ISTJ",
+      "ISTP"
+    ]
+  },
+  "scenes": [
+    {
+      "id": "s11",
+      "year": 1,
+      "semester": 1,
+      "kind": "생활",
+      "prompt": "동아리 모집 주간, 누구와 무엇을 해볼까?",
+      "choices": [
+        {
+          "id": "s11_a",
+          "label": "취미 동아리에서 친구 만들기",
+          "effects": {
+            "relations": 2,
+            "mental": 1,
+            "money": -1
+          },
+          "feedback": "동아리 활동비를 쓰고, 취미를 함께 즐길 친구들을 만났다."
+        },
+        {
+          "id": "s11_b",
+          "label": "축제 준비단에서 행사 함께 꾸리기",
+          "effects": {
+            "relations": 1,
+            "teamwork": 1,
+            "mental": -1
+          },
+          "feedback": "준비 일정은 바빴지만 사람들과 힘을 모아 행사를 꾸렸다."
+        },
+        {
+          "id": "s11_c",
+          "label": "알바부터 구해 생활비 마련하기",
+          "effects": {
+            "money": 2,
+            "mental": -1
+          },
+          "feedback": "알바로 생활비를 마련하는 대신 일정이 조금 바빠졌다."
+        }
+      ]
+    },
+    {
+      "id": "s12",
+      "year": 1,
+      "semester": 2,
+      "kind": "진로",
+      "prompt": "첫 전공 팀 과제, 내가 맡을 일은?",
+      "choices": [
+        {
+          "id": "s12_a",
+          "label": "작은 기능 직접 만들기",
+          "effects": {
+            "making": 2,
+            "mental": -1
+          },
+          "feedback": "막히는 부분을 하나씩 풀며 팀 과제의 작은 기능을 완성했다."
+        },
+        {
+          "id": "s12_b",
+          "label": "수업 자료를 찾아 막힌 부분 풀기",
+          "effects": {
+            "study": 1,
+            "inquiry": 1,
+            "mental": -1
+          },
+          "feedback": "수업 자료를 다시 읽고 과제에서 헷갈렸던 부분을 풀었다."
+        },
+        {
+          "id": "s12_c",
+          "label": "역할을 나누고 결과 발표하기",
+          "effects": {
+            "teamwork": 2,
+            "mental": -1
+          },
+          "feedback": "팀원들의 역할을 정리하고 함께 만든 결과를 발표했다."
+        }
+      ]
+    },
+    {
+      "id": "s21",
+      "year": 2,
+      "semester": 1,
+      "kind": "생활",
+      "prompt": "생활비가 빠듯하다. 이번 학기를 어떻게 보낼까?",
+      "choices": [
+        {
+          "id": "s21_a",
+          "label": "알바 시간을 늘려 지출 대비하기",
+          "effects": {
+            "money": 2,
+            "mental": -2
+          },
+          "feedback": "생활비에 대비하려고 더 일하면서 쉴 시간이 줄었다."
+        },
+        {
+          "id": "s21_b",
+          "label": "친구와 생활용품 공동 구매하기",
+          "effects": {
+            "money": 1,
+            "relations": 1,
+            "mental": -1
+          },
+          "feedback": "친구와 필요한 물건을 맞춰 사며 생활비를 아꼈다."
+        },
+        {
+          "id": "s21_c",
+          "label": "모임 지출을 줄이고 집에서 쉬기",
+          "effects": {
+            "money": 1,
+            "mental": 1,
+            "relations": -1
+          },
+          "feedback": "모임은 줄었지만 지출을 아끼고 집에서 쉬어 갔다."
+        }
+      ]
+    },
+    {
+      "id": "s22",
+      "year": 2,
+      "semester": 2,
+      "kind": "진로",
+      "prompt": "공모전 마감이 다가온다. 남은 시간을 어디에 쓸까?",
+      "choices": [
+        {
+          "id": "s22_a",
+          "label": "핵심 기능을 작동하게 만들기",
+          "effects": {
+            "making": 2,
+            "mental": -1
+          },
+          "feedback": "마감까지 기능을 다듬어 공모전에서 보여줄 결과물을 만들었다."
+        },
+        {
+          "id": "s22_b",
+          "label": "아이디어의 근거를 조사하기",
+          "effects": {
+            "inquiry": 2,
+            "mental": -1
+          },
+          "feedback": "자료를 파고들며 공모전 아이디어를 뒷받침할 근거를 모았다."
+        },
+        {
+          "id": "s22_c",
+          "label": "팀 자료를 정리해 발표 완성하기",
+          "effects": {
+            "teamwork": 1,
+            "study": 1,
+            "mental": -1
+          },
+          "feedback": "팀의 자료를 이해하고 정리해 발표를 완성했다."
+        }
+      ]
+    },
+    {
+      "id": "s31",
+      "year": 3,
+      "semester": 1,
+      "kind": "생활",
+      "prompt": "일정에 지친 와중에 친구가 축제에 가자고 한다.",
+      "choices": [
+        {
+          "id": "s31_a",
+          "label": "하루 비우고 함께 즐기기",
+          "effects": {
+            "relations": 1,
+            "mental": 2,
+            "money": -1
+          },
+          "feedback": "하루 경비를 쓰고 친구들과 축제를 즐기며 쉬어 갔다."
+        },
+        {
+          "id": "s31_b",
+          "label": "오늘은 혼자 푹 쉬기",
+          "effects": {
+            "mental": 2,
+            "relations": -1
+          },
+          "feedback": "친구들과의 약속 대신 혼자 쉬는 시간을 보냈다."
+        },
+        {
+          "id": "s31_c",
+          "label": "약속을 미루고 밀린 전공 공부 마치기",
+          "effects": {
+            "study": 2,
+            "mental": -1
+          },
+          "feedback": "축제 약속을 미루고 밀려 있던 전공 공부를 마쳤다."
+        }
+      ]
+    },
+    {
+      "id": "s32",
+      "year": 3,
+      "semester": 2,
+      "kind": "진로",
+      "prompt": "여름에 한 가지 경험에 집중한다면?",
+      "choices": [
+        {
+          "id": "s32_a",
+          "label": "인턴으로 팀의 작은 업무 맡기",
+          "effects": {
+            "teamwork": 1,
+            "making": 1,
+            "mental": -1
+          },
+          "feedback": "팀의 일정을 따라 작은 업무를 맡아 결과를 전달했다."
+        },
+        {
+          "id": "s32_b",
+          "label": "개인 앱을 완성해 공개하기",
+          "effects": {
+            "making": 2,
+            "mental": -1
+          },
+          "feedback": "직접 만든 앱을 마무리하고 다른 사람이 써볼 수 있게 공개했다."
+        },
+        {
+          "id": "s32_c",
+          "label": "궁금한 주제를 찾아 실험하기",
+          "effects": {
+            "inquiry": 2,
+            "mental": -1
+          },
+          "feedback": "궁금했던 주제를 정하고 직접 실험하며 방학을 보냈다."
+        }
+      ]
+    },
+    {
+      "id": "s41",
+      "year": 4,
+      "semester": 1,
+      "kind": "생활",
+      "prompt": "취업 준비 중 친구들이 마지막 여행을 제안했다.",
+      "choices": [
+        {
+          "id": "s41_a",
+          "label": "함께 여행 다녀오기",
+          "effects": {
+            "relations": 2,
+            "mental": 2,
+            "money": -2
+          },
+          "feedback": "여행 경비를 쓰고 친구들과 남은 대학 생활의 추억을 만들었다."
+        },
+        {
+          "id": "s41_b",
+          "label": "가까운 곳에서 하루만 만나기",
+          "effects": {
+            "relations": 1,
+            "mental": 1,
+            "money": -1
+          },
+          "feedback": "가까운 곳에서 하루를 함께 보내며 잠시 숨을 돌렸다."
+        },
+        {
+          "id": "s41_c",
+          "label": "여행 대신 알바와 내 생활 리듬 챙기기",
+          "effects": {
+            "money": 2,
+            "relations": -1
+          },
+          "feedback": "여행은 건너뛰고 알바와 평소 생활 리듬을 챙겼다."
+        }
+      ]
+    },
+    {
+      "id": "s42",
+      "year": 4,
+      "semester": 2,
+      "kind": "진로",
+      "prompt": "졸업 프로젝트 시연 전, 마지막 문제를 해결하자.",
+      "choices": [
+        {
+          "id": "s42_a",
+          "label": "빠진 핵심 기능을 구현하기",
+          "effects": {
+            "making": 2,
+            "mental": -1
+          },
+          "feedback": "시연에 필요한 핵심 기능을 마지막까지 구현했다."
+        },
+        {
+          "id": "s42_b",
+          "label": "반복 오류를 분석해 고치기",
+          "effects": {
+            "inquiry": 1,
+            "study": 1,
+            "mental": -1
+          },
+          "feedback": "반복되는 오류의 원인을 공부하고 분석해 고쳤다."
+        },
+        {
+          "id": "s42_c",
+          "label": "친구들에게 써보게 하고 개선점 정리하기",
+          "effects": {
+            "inquiry": 1,
+            "teamwork": 1,
+            "mental": -1
+          },
+          "feedback": "친구들의 사용 모습을 살펴보고 들은 의견을 개선점으로 정리했다."
+        }
+      ]
+    }
+  ],
+  "result": {
+    "title": "졸업을 축하합니다!",
+    "careerTitle": "졸업 후 진로 예시",
+    "role": "웹 프론트엔드 개발자",
+    "description": "웹사이트에서 사람들이 보고 누르는 화면과 기능을 만들고, 편하고 빠르게 사용할 수 있도록 다듬는 일을 해요.",
+    "notice": "이번 체험에서는 공통 진로 예시를 보여드려요. 어떤 일을 하는지 실제 공고에서 살펴보세요.",
+    "jobs": [
+      {
+        "id": "tpc_front_junior",
+        "company": "티피씨인터넷",
+        "title": "웹 프론트엔드 개발자 / Frontend Engineer (신입·주니어)",
+        "url": "https://www.tpc.me/front_junior",
+        "experience": "신입·경력",
+        "description": "웹 화면·기능을 만들고 모바일 웹 사용성을 개선하는 일",
+        "deadline": "종료일 미표시",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "eloicube_front",
+        "company": "엘로이큐브",
+        "title": "프론트엔드(JAVASCRIPT) UI & UX 디벨로퍼",
+        "url": "https://recruit.eloicube.com/d4b78856-2593-404b-b348-7013d65139ca",
+        "experience": "경력무관",
+        "description": "솔루션 화면을 구현하고 사용성·성능을 개선하는 일",
+        "deadline": "종료일 미표시",
+        "checkedAt": "2026-10-27"
+      }
+    ]
+  }
+}
