@@ -56,7 +56,9 @@ node scripts/check-game.mjs
 
 ## 다음 단계
 
-현재 로컬 Git 저장소를 준비했고, 원격 GitHub 저장소·Netlify 프로젝트·Sheets는 아직 연결하지 않았다. 2026-10-27 사용자 요청으로 **GitHub–Netlify 배포를 먼저 하고 Sheets 저장을 이후 연결**하는 순서로 변경했다. 공개 전까지 실제 배포 성공으로 간주하지 않는다.
+2026-10-28 [limeunhyuk/swai](https://github.com/limeunhyuk/swai)의 `main` 브랜치에 1차 제품 코드를 업로드했다. Netlify는 빈 저장소 오류 뒤 재연결할 단계이며 실제 사이트 배포는 아직 확인하지 않았다. Sheets 저장은 아직 연결하지 않았다. 사용자 요청에 따라 **GitHub–Netlify 배포를 먼저 하고 Sheets 저장을 이후 연결**한다.
+
+Netlify 연결 설정: 저장소 `limeunhyuk/swai`, 브랜치 `main`, Base directory 비움, Build command 비움, Publish directory `public`. 이번 저장소의 루트 자체가 제품 폴더이므로 `project/web`를 Base directory로 넣지 않는다.
 
 1. 제품 폴더만 공개 GitHub 저장소에 올리고 새 Netlify 프로젝트에 연결한다. 빌드 명령은 비우고 공개 폴더는 `public`을 사용한다. 초기 배포에서는 환경변수가 필요 없다.
 2. 첫 배포와 작은 변경의 commit/push 자동 반영을 확인한다. 배포 후에도 기록·의견은 미저장 상태임을 표시한다.
