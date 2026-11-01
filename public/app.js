@@ -27,7 +27,7 @@ function showStart() {
     <p class="intro">3학년의 시작부터 졸업까지.<br>과제도, 연애도, 취업 준비도 내 선택대로.</p>
     <div class="journey"><span class="journey-icon" aria-hidden="true">&lt;/&gt;</span><div><strong>4학기, 8번의 선택</strong><p>대학 생활의 끝에서 나만의 이력서를 만나보세요.</p></div></div>
     <div class="home-actions"><div><button class="primary instant-button" id="instant-button">이력서 즉시 확인 <span aria-hidden="true">↗</span></button><p>예시 이력서와 추천 직무, 실제 채용공고를 바로 확인해요.</p></div><div><button class="secondary" id="setup-button">3학년 시작하기 <span aria-hidden="true">→</span></button><p>8번의 선택으로 나만의 대학 생활과 이력서를 만들어요.</p></div></div>
-    <p class="local-notice">${recording ? '방문·플레이 흐름은 익명으로 기록돼요.' : '미리보기 · 현재는 체험 기록과 의견을 저장할 수 없어요.'}</p></section>`;
+    <p class="local-notice">${recording ? '방문·플레이 흐름을 기록해요.' : '미리보기 · 현재는 체험 기록과 의견을 저장할 수 없어요.'}</p></section>`;
   document.querySelector('#instant-button').addEventListener('click', showInstant);
   document.querySelector('#setup-button').addEventListener('click', () => { showSetup(); focusHeading(); });
 }
@@ -153,7 +153,7 @@ try {
   document.querySelector('#brand-home').addEventListener('click', () => { showStart(); focusHeading(); });
   tracker.available().then(enabled => {
     recording = enabled; if (enabled) tracker.event('visit');
-    const notice = document.querySelector('.local-notice'); if (notice && enabled) notice.textContent = '방문·플레이 흐름은 익명으로 기록돼요.';
+    const notice = document.querySelector('.local-notice'); if (notice && enabled) notice.textContent = '방문·플레이 흐름을 기록해요.';
   });
 } catch {
   app.innerHTML = '<section class="setup-card"><h1>새 학기를 불러오지 못했어요.</h1><p>연결을 확인하고 다시 시도해주세요.</p><button class="primary" id="reload">다시 불러오기</button></section>';
