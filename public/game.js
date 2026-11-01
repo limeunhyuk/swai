@@ -10,7 +10,7 @@ export function createGame(content, profile, random = Math.random) {
       const pick = Math.floor(random() * (index + 1));
       [pool[index], pool[pick]] = [pool[pick], pool[index]];
     }
-    return [semester.career, ...pool.slice(0, 2)].map(id => content.scenes.find(scene => scene.id === id));
+    return [semester.career, ...pool.slice(0, 1)].map(id => content.scenes.find(scene => scene.id === id));
   });
   const surname = (profile.surname || '').trim() || '김';
   const givenName = (profile.givenName || '').trim() || '컴공';
@@ -47,19 +47,19 @@ export function choose(content, state, choiceId) {
 
 export function advance(content, state) {
   if (state.screen === 'grade') {
-    if (state.grades.length !== Math.floor(state.sceneIndex / 3) + 1) return state;
+    if (state.grades.length !== Math.floor(state.sceneIndex / 2) + 1) return state;
     return state.sceneIndex === state.scenes.length - 1
       ? { ...state, screen: 'result' }
       : { ...state, screen: 'play', sceneIndex: state.sceneIndex + 1, selected: false };
   }
   if (state.screen !== 'play' || !state.selected) return state;
-  if ((state.sceneIndex + 1) % 3 === 0) return { ...state, screen: 'grade' };
+  if ((state.sceneIndex + 1) % 2 === 0) return { ...state, screen: 'grade' };
   return { ...state, sceneIndex: state.sceneIndex + 1, selected: false };
 }
 
 // 시연용 누적 평점. 학업 스탯을 조금 반영하며 학점별 정교한 계산은 하지 않는다.
 export function rollGrade(content, state, random = Math.random) {
-  const semester = Math.floor(state.sceneIndex / 3);
+  const semester = Math.floor(state.sceneIndex / 2);
   if (state.screen !== 'grade' || state.grades.length !== semester) return state;
   const base = [3.60, 3.55, 3.77, 3.94][semester];
   const gpa = Math.round(Math.min(4.5, base + (state.stats.study + state.stats.inquiry * 0.3) * 0.012 + (random() - 0.5) * 0.04) * 100) / 100;

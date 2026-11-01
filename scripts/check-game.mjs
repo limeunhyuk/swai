@@ -58,11 +58,13 @@ const covered = new Set();
 function play(initial, strategy, gradeRandom = () => 0.5) {
   let state = initial;
   const expectedExperiences = [];
-  assert.equal(new Set(state.scenes.map(scene => scene.id)).size, 12);
+  assert.equal(new Set(state.scenes.map(scene => scene.id)).size, 8);
   assert.equal(state.gpa, INITIAL_GPA);
-  for (let index = 0; index < 12; index++) {
+  for (let index = 0; index < 8; index++) {
     const scene = state.scenes[index]; covered.add(scene.id);
-    assert.equal(scene.kind === '진로', index % 3 === 0);
+    assert.equal(scene.kind === '진로', index % 2 === 0);
+    const semester = content.semesters[Math.floor(index / 2)];
+    assert.equal(scene.year, semester.year); assert.equal(scene.semester, semester.semester);
     assert.strictEqual(advance(content, state), state, '선택 전 진행 금지');
     assert.strictEqual(choose(content, state, 'invalid'), state);
     const choice = scene.choices[(strategy + index) % 3];
@@ -77,18 +79,18 @@ function play(initial, strategy, gradeRandom = () => 0.5) {
     }
     if (choice.experience) expectedExperiences.push(choice.experience.title);
     state = advance(content, selected);
-    if ((index + 1) % 3 === 0) {
+    if ((index + 1) % 2 === 0) {
       assert.equal(state.screen, 'grade');
       assert.strictEqual(advance(content, state), state, '룰렛 전 학기 진행 금지');
       state = rollGrade(content, state, gradeRandom);
-      assert.equal(state.grades.length, (index + 1) / 3);
+      assert.equal(state.grades.length, (index + 1) / 2);
       assert(state.gpa >= 0 && state.gpa <= 4.5);
       assert.strictEqual(rollGrade(content, state), state, '학점 중복 반영 방지');
       state = advance(content, state);
     }
   }
   assert.equal(state.screen, 'result'); assert.equal(state.grades.length, 4);
-  assert.equal(state.history.length, 12); assert(state.gpa > INITIAL_GPA);
+  assert.equal(state.history.length, 8); assert(state.gpa > INITIAL_GPA);
   assert(state.grades.at(-1).gpa > state.grades[0].gpa, '졸업까지 전반적으로 상승');
   assert.deepEqual(state.experiences.map(item => item.title), expectedExperiences, '선택하지 않은 경험을 기재하면 안 됨');
   assert.strictEqual(advance(content, state), state);
@@ -97,13 +99,14 @@ function play(initial, strategy, gradeRandom = () => 0.5) {
   return state;
 }
 
-// 학기별 일상 사건 두 개의 순서 6가지 × 4학기의 모든 1,296가지 구성을 검사한다.
-for (let schedule = 0; schedule < 6 ** 4; schedule++) {
+// Fisher–Yates 표본으로 학기별 일상 사건 3가지 × 4학기의 81가지 구성을 검사한다.
+const shuffleSamples = [[0.99, 0.75], [0.99, 0.25], [0.1, 0.75]];
+for (let schedule = 0; schedule < 3 ** 4; schedule++) {
   let value = schedule;
   const samples = [];
   for (let term = 0; term < 4; term++) {
-    const permutation = value % 6; value = Math.floor(value / 6);
-    samples.push((Math.floor(permutation / 2) + 0.5) / 3, (permutation % 2 + 0.5) / 2);
+    const pick = value % 3; value = Math.floor(value / 3);
+    samples.push(...shuffleSamples[pick]);
   }
   let cursor = 0;
   play(createGame(content, profile, () => samples[cursor++]), schedule % 3);
@@ -116,7 +119,7 @@ for (const boundary of [0, 10]) for (const sample of [0, 0.999999]) {
   let state = createGame(content, profile);
   state.stats.study = boundary; state.stats.inquiry = boundary;
   for (let term = 0; term < 4; term++) {
-    state = rollGrade(content, { ...state, screen: 'grade', sceneIndex: term * 3 + 2 }, () => sample);
+    state = rollGrade(content, { ...state, screen: 'grade', sceneIndex: term * 2 + 1 }, () => sample);
     assert(state.gpa >= INITIAL_GPA && state.gpa <= 4.5);
   }
   assert(state.grades[1].gpa < state.grades[0].gpa, '중간에 내려가는 학기도 표현');
@@ -129,4 +132,4 @@ for (const scene of content.scenes) for (const choice of scene.choices) for (con
   const next = choose(content, state, choice.id);
   for (const stat of content.stats) assert(next.stats[stat.id] >= 0 && next.stats[stat.id] <= 10);
 }
-console.log(`PASS · 16사건/48선택 균형 · 1,296개 사건 구성 + 성별/선택/룰렛 경계 12경로 = ${completed}회 완주 · 3.5 시작·상승/하락·실제 공고 6개·실제 경험·중복 방지·상하한`);
+console.log(`PASS · 16사건/48선택 균형 · 81개 사건 구성 + 성별/선택/룰렛 경계 12경로 = ${completed}회 8선택 완주 · 4회 룰렛·3.5 시작·상승/하락·실제 공고·중복 방지·상하한`);

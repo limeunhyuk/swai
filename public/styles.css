@@ -154,7 +154,7 @@ input::placeholder{color:#a1aebb;opacity:.52}
 .starting-grade strong{display:block;font:26px ui-monospace,monospace;color:var(--accent);margin-top:4px}
 .starting-grade small{font-size:12px;color:var(--muted)}
 .starting-grade p{font-size:11px;color:#bac8ce;text-align:right}
-.semester-track{grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;margin-bottom:14px}
+.semester-track{grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;margin-bottom:14px}
 .gpa-strip{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin-bottom:14px}
 .gpa-strip strong{color:var(--accent);font:18px ui-monospace,monospace;margin:0 4px}
 .experience-earned{font-size:11px;color:var(--accent);border-top:1px solid #38504c;padding-top:10px;margin-top:10px}
