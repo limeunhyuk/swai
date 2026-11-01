@@ -1,3 +1,5 @@
+import { sourceForUrl } from './campaigns.js';
+
 const memory = new Map();
 export function readLocal(key, fallback = '') {
   try { return localStorage.getItem(key) ?? memory.get(key) ?? fallback; }
@@ -15,7 +17,7 @@ export function createTracker(version) {
   const context = { visitor_id: visitor, visit_id: makeId(), content_version: version,
     landing_url: location.origin + location.pathname,
     device: /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-    source: (params.get('utm')?.trim() || params.get('utm_source')?.trim() || 'direct').slice(0, 80),
+    source: sourceForUrl(new URL(location.href)),
     is_test: params.get('test') === '1' || ['localhost', '127.0.0.1'].includes(location.hostname) };
   async function send(payload) {
     const response = await fetch('/.netlify/functions/record', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: AbortSignal.timeout(25000), keepalive: true });

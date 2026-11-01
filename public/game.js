@@ -1,9 +1,17 @@
 export const INITIAL_GPA = 3.5;
+export const MAX_GPA = 4.3;
 
-export function createGame(content, profile, random = Math.random) {
-  if (!content.profile.genders.some(({ id }) => id === profile.gender)) {
-    throw new Error('성별을 선택해주세요.');
-  }
+export function currentScene(content, state) {
+  if (state.selected && state.selectedScene) return state.selectedScene;
+  const scene = state.scenes[state.sceneIndex];
+  return content.pathScenes[state.direction]?.[scene.id] || scene;
+}
+
+export function resultCareer(content, state) {
+  return content.careers.find(item => item.id === state.direction);
+}
+
+export function createGame(content, profile = {}, random = Math.random) {
   const scenes = content.semesters.flatMap(semester => {
     const pool = [...semester.life];
     for (let index = pool.length - 1; index > 0; index--) {
@@ -15,7 +23,7 @@ export function createGame(content, profile, random = Math.random) {
   const surname = (profile.surname || '').trim() || '김';
   const givenName = (profile.givenName || '').trim() || '컴공';
   return {
-    screen: 'play', sceneIndex: 0, scenes,
+    screen: 'play', sceneIndex: 0, scenes, direction: '', mode: 'game',
     profile: { ...profile, surname, givenName, name: surname + givenName }, selected: false,
     stats: Object.fromEntries(content.stats.map(stat => [stat.id, stat.initial])),
     history: [], experiences: [], grades: [], gpa: INITIAL_GPA
@@ -25,7 +33,7 @@ export function createGame(content, profile, random = Math.random) {
 // 계산과 화면이 같은 규칙을 사용한다. 선택 후에는 다음 이야기까지 다시 반영하지 않는다.
 export function choose(content, state, choiceId) {
   if (state.screen !== 'play' || state.selected) return state;
-  const scene = state.scenes[state.sceneIndex];
+  const scene = currentScene(content, state);
   const choice = scene.choices.find(item => item.id === choiceId);
   if (!choice) return state;
   const stats = { ...state.stats };
@@ -36,7 +44,7 @@ export function choose(content, state, choiceId) {
     changes[id] = stats[id] - state.stats[id];
   }
   return {
-    ...state, selected: true, stats,
+    ...state, selected: true, selectedScene: scene, stats, direction: choice.direction || state.direction,
     experiences: choice.experience ? [...state.experiences, { ...choice.experience, year: scene.year, semester: scene.semester }] : state.experiences,
     history: [...state.history, {
       sceneId: scene.id, year: scene.year, semester: scene.semester,
@@ -62,7 +70,19 @@ export function rollGrade(content, state, random = Math.random) {
   const semester = Math.floor(state.sceneIndex / 2);
   if (state.screen !== 'grade' || state.grades.length !== semester) return state;
   const base = [3.60, 3.55, 3.77, 3.94][semester];
-  const gpa = Math.round(Math.min(4.5, base + (state.stats.study + state.stats.inquiry * 0.3) * 0.012 + (random() - 0.5) * 0.04) * 100) / 100;
+  const gpa = Math.round(Math.min(MAX_GPA, base + (state.stats.study + state.stats.inquiry * 0.3) * 0.012 + (random() - 0.5) * 0.04) * 100) / 100;
   const scene = state.scenes[state.sceneIndex];
   return { ...state, gpa, grades: [...state.grades, { year: scene.year, semester: scene.semester, gpa, previous: state.gpa }] };
+}
+
+// 예시도 같은 게임 규칙으로 준비하되 실제 플레이 기록으로 전송하지 않는다.
+export function createExample(content, direction) {
+  let state = createGame(content, {}, () => 0.5);
+  for (let index = 0; index < 8; index++) {
+    const scene = currentScene(content, state);
+    const choice = scene.choices.find(item => item.direction === direction) || scene.choices[0];
+    state = advance(content, choose(content, state, choice.id));
+    if (state.screen === 'grade') state = advance(content, rollGrade(content, state, () => 0.5));
+  }
+  return { ...state, mode: 'instant', career: resultCareer(content, state) };
 }

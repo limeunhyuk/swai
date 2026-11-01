@@ -6,7 +6,7 @@ import { buildSummary } from './summary.mjs';
 const base = { visitor_id: 'visitor-1', visit_id: 'visit-1', run_id: 'run-1', source: 'community-a', content_version: 'test', is_test: false };
 const event = { ...base, kind: 'event', event_id: 'event-1', event_type: 'visit' };
 assert(validateRecord(event));
-assert.equal(validateRecord({ ...event, event_type: 'start' }), null);
+assert(validateRecord({ ...event, event_type: 'start' }), '성별 없이 시작 가능');
 assert(validateRecord({ ...event, event_type: 'start', gender: 'male', mbti: 'INTP' }));
 assert(validateRecord({ ...event, event_type: 'start', gender: 'female' }), 'MBTI 없이 시작 기록 가능');
 assert.equal(validateRecord({ ...event, event_type: 'start', gender: 'male', mbti: 'invalid' }), null);
@@ -122,3 +122,32 @@ try {
   for (const [key, value] of Object.entries(savedGlobals)) { if (value === undefined) delete globalThis[key]; else globalThis[key] = value; }
 }
 console.log('PASS · 브라우저 유입 고정·익명 방문/판 구분·기존 API 중복 쓰기 방지·저장소 차단·미연결 전송 방지');
+
+const { sourceForUrl, campaigns, campaignSource } = await import('../public/campaigns.js');
+assert.equal(sourceForUrl(new URL('https://example.test/r/e01?utm=wrong')), campaignSource(campaigns[0]));
+assert.equal(sourceForUrl(new URL('https://example.test/r/e01/')), campaignSource(campaigns[0]));
+assert.equal(sourceForUrl(new URL('https://example.test/r/z99')), 'unregistered');
+assert.equal(sourceForUrl(new URL('https://example.test/?utm=legacy')), 'legacy');
+assert.equal(sourceForUrl(new URL('https://example.test/')), 'direct');
+assert.equal(new Set(campaigns.map(item => item.code)).size, campaigns.length);
+assert(campaigns.every(item => campaignSource(item).length <= 80));
+const instant = { ...base, run_id: 'instant-1', mode: 'instant', kind: 'event', event_id: 'instant-event', event_type: 'instant_view' };
+assert.equal(validateRecord(instant).mode, 'instant');
+assert.equal(new URL(legacyInsert(validateRecord(instant)).data.landingUrl).searchParams.get('mode'), 'instant');
+assert.equal(validateRecord({ ...instant, mode: 'bad' }), null);
+const sourceA = 'everytime__yonsei-free__20261103__0900__p01';
+const sourceB = 'everytime__yonsei-free__20261103__1900__p02';
+const sampleEvents = [
+  ...['visit','instant_start','instant_view','job_click'].map(event_type => ({ ...instant, source: sourceA, event_type })),
+  ...['visit','start','complete','job_click'].map(event_type => ({ ...base, mode: 'game', source: sourceB, visit_id: 'visit-other', event_type }))
+];
+const split = buildSummary(sampleEvents, []);
+const platform = split.find(row => row[0] === '플랫폼: everytime');
+assert.equal(platform[1], 1, '여러 게시물의 고유 브라우저 중복 제거');
+assert.equal(platform[2], 2); assert.equal(platform[5], 1); assert.equal(platform[6], 1);
+assert.equal(platform[13], 1); assert.equal(platform[14], 1); assert.equal(platform[15], 1); assert.equal(platform[16], 1);
+assert.equal(split.find(row => row[0] === sourceA)[5], 0, '즉시 보기는 게임 완주가 아님');
+assert.equal(split.find(row => row[0] === sourceA)[15], 1, '게임을 시작하지 않은 예시 공고 클릭 포함');
+assert(split.some(row => row[0] === '게시판: everytime__yonsei-free'));
+assert(split.some(row => row[0] === '게시일: everytime__yonsei-free__20261103'));
+console.log('PASS · 짧은 링크 대응·기존 UTM·미등록 코드·게시 회차/플랫폼/게시판/날짜별 중복 제거·예시/게임 집계 분리');

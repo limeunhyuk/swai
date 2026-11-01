@@ -7,6 +7,8 @@ export function validateRecord(input) {
   if (!idValid(input.visitor_id) || !idValid(input.visit_id) || !textValid(input.source, 80) || !input.source.trim() || !textValid(input.content_version, 60)) return null;
   const record = { kind: input.kind, visitor_id: input.visitor_id, visit_id: input.visit_id,
     run_id: input.run_id || '', source: input.source.trim(), content_version: input.content_version, is_test: input.is_test === true };
+  if (input.mode !== undefined && !['game', 'instant'].includes(input.mode)) return null;
+  record.mode = input.mode || 'game';
   if (input.landing_url) {
     try {
       const landing = new URL(input.landing_url);
@@ -17,15 +19,17 @@ export function validateRecord(input) {
   record.device = ['mobile', 'desktop'].includes(input.device) ? input.device : 'unknown';
   if (record.run_id && !idValid(record.run_id)) return null;
   if (input.kind === 'event') {
-    if (!idValid(input.event_id) || !['visit', 'start', 'first_choice', 'complete', 'job_click'].includes(input.event_type)) return null;
+    if (!idValid(input.event_id) || !['visit', 'start', 'first_choice', 'complete', 'job_click', 'instant_start', 'instant_view'].includes(input.event_type)) return null;
+    if (['instant_start', 'instant_view'].includes(input.event_type) && record.mode !== 'instant') return null;
+    if (['start', 'first_choice', 'complete'].includes(input.event_type) && record.mode !== 'game') return null;
     if (input.event_type !== 'visit' && !record.run_id) return null;
     Object.assign(record, { event_id: input.event_id, event_type: input.event_type, choice_id: '', job_id: '', gender: '', mbti: '' });
     if (input.event_type === 'first_choice') { if (!idValid(input.choice_id)) return null; record.choice_id = input.choice_id; }
     if (input.event_type === 'job_click') { if (!idValid(input.job_id)) return null; record.job_id = input.job_id; }
     if (input.event_type === 'start') {
-      if (!['male', 'female'].includes(input.gender)) return null;
+      if (input.gender && !['male', 'female'].includes(input.gender)) return null;
       if (input.mbti && !/^[IE][NS][TF][JP]$/.test(input.mbti)) return null;
-      record.gender = input.gender; record.mbti = input.mbti || '';
+      record.gender = input.gender || ''; record.mbti = input.mbti || '';
     }
   } else {
     if (!idValid(input.feedback_id) || !record.run_id || !textValid(input.text, 1000) || !textValid(input.email, 254)) return null;
@@ -45,7 +49,7 @@ export function legacyInsert(record, now = new Date()) {
     } };
   }
   const landing = new URL(record.landing_url || 'https://savecs.netlify.app/');
-  for (const key of ['event_id', 'event_type', 'visitor_id', 'visit_id', 'run_id', 'content_version', 'choice_id', 'job_id', 'gender', 'mbti', 'is_test']) {
+  for (const key of ['event_id', 'event_type', 'visitor_id', 'visit_id', 'run_id', 'content_version', 'choice_id', 'job_id', 'gender', 'mbti', 'mode', 'is_test']) {
     if (record[key] !== undefined && record[key] !== '') landing.searchParams.set(key, String(record[key]));
   }
   landing.searchParams.set('swai_v', '2');

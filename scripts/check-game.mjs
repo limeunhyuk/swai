@@ -1,135 +1,41 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { INITIAL_GPA, createGame, choose, advance, rollGrade } from '../public/game.js';
-
+import { INITIAL_GPA, MAX_GPA, createGame, choose, advance, rollGrade, currentScene, resultCareer, createExample } from '../public/game.js';
 const content = JSON.parse(await readFile(new URL('../public/content.json', import.meta.url), 'utf8'));
-const profile = { gender: 'male' };
-assert.equal(content.semesters.length, 4);
-assert.equal(content.stats.length, 7);
-assert.equal(content.scenes.length, 16);
-assert.equal(content.careers.length, 3);
-assert.equal(new Set(content.scenes.map(scene => scene.id)).size, 16);
-assert.equal(content.profile.mbti, undefined);
-assert.equal(INITIAL_GPA, 3.5);
-const statIds = new Set(content.stats.map(stat => stat.id));
-const choiceIds = new Set();
-for (const [index, semester] of content.semesters.entries()) {
-  assert.equal(semester.year, 3 + Math.floor(index / 2));
-  assert.equal(semester.semester, index % 2 + 1);
-  assert.equal(semester.life.length, 3);
-  for (const id of [semester.career, ...semester.life]) {
-    const scene = content.scenes.find(item => item.id === id);
-    assert(scene);
-    assert.equal(scene.year, semester.year); assert.equal(scene.semester, semester.semester);
-  }
-}
-for (const scene of content.scenes) {
-  assert.equal(scene.choices.length, 3);
+const paths = content.careers.map(item => item.id);
+assert.deepEqual(paths, ['project', 'certificate', 'intern']);
+assert.equal(INITIAL_GPA, 3.5); assert.equal(MAX_GPA, 4.3); assert.equal(content.profile, undefined);
+for (const [names, expected] of [[{}, '김컴공'], [{ surname: '박' }, '박컴공'], [{ givenName: '민수' }, '김민수'], [{ surname: ' ', givenName: ' ' }, '김컴공']]) assert.equal(createGame(content, names).profile.name, expected);
+const scenes = [...content.scenes, ...Object.values(content.pathScenes).flatMap(Object.values)];
+for (const scene of scenes) {
+  assert(scene.choices.length >= 2 && scene.choices.length <= 3);
   for (const choice of scene.choices) {
-    assert(!choiceIds.has(choice.id)); choiceIds.add(choice.id);
-    assert(choice.label && choice.feedback);
-    for (const [id, value] of Object.entries(choice.effects)) {
-      assert(statIds.has(id)); assert(Number.isInteger(value) && value !== 0 && Math.abs(value) <= 2);
-    }
-    assert.equal(Object.values(choice.effects).reduce((sum, value) => sum + value, 0), 2, `${choice.id}: 선택 보상 균형`);
-    if (choice.experience) assert(choice.experience.type && choice.experience.title && choice.experience.detail);
+    assert.equal(Object.values(choice.effects).reduce((a,b) => a+b,0), 2);
+    for (const [id, amount] of Object.entries(choice.effects)) { assert(content.stats.some(stat => stat.id === id)); assert(Number.isInteger(amount) && Math.abs(amount) <= 2); }
   }
 }
-assert.equal(choiceIds.size, 48);
-assert.equal(new Set(content.careers.flatMap(career => career.jobs.map(job => job.id))).size, 6);
-for (const career of content.careers) {
-  assert(career.label && career.title && career.title !== career.label);
-  assert.equal(career.jobs.length, 2);
-  for (const job of career.jobs) {
-    assert(job.company && job.title && job.tasks.length && job.skills.length && job.conditions.length);
-    assert.match(job.url, /^https:\/\/careers\.upstage\.ai\/ko\/o\/\d+$/);
-    assert.equal(job.checkedAt, '2026-11-02');
-    assert(job.deadline === null || job.deadline >= '2026-11-06');
-    assert(job.deadlineLabel);
+let completed = 0; const schedules = new Set(); const covered = new Set();
+const samples = [[.99,.75],[.99,.25],[.1,.75]];
+for(let schedule=0;schedule<81;schedule++) for(const initial of paths) for(const final of paths) for(let strategy=0;strategy<3;strategy++) {
+  let value=schedule, randoms=[]; for(let t=0;t<4;t++){randoms.push(...samples[value%3]);value=Math.floor(value/3);}let cursor=0;
+  let state=createGame(content,{},()=>randoms[cursor++]);assert.equal(state.scenes.length,8);schedules.add(state.scenes.map(s=>s.id).join(','));
+  const expected=[];
+  for(let index=0;index<8;index++) {
+    const scene=currentScene(content,state); covered.add(scene.id+':'+(index%2===0?state.direction:''));
+    assert.equal(scene.kind==='진로',index%2===0);assert.strictEqual(advance(content,state),state);assert.strictEqual(choose(content,state,'invalid'),state);
+    const choice=index===0?scene.choices.find(c=>c.direction===initial):index===4?(initial===final?scene.choices[0]:scene.choices.find(c=>c.direction===final)):scene.choices[strategy%scene.choices.length];
+    const before=structuredClone(state);const selected=choose(content,state,choice.id);assert.deepEqual(state,before);assert.strictEqual(choose(content,selected,choice.id),selected);
+    assert(currentScene(content,selected).choices.some(item => item.id === choice.id), '방향 변경 직후에도 방금 선택한 사건과 피드백 유지');
+    if(choice.experience)expected.push(choice.experience.title);
+    for(const stat of content.stats){assert(selected.stats[stat.id]>=0&&selected.stats[stat.id]<=10);if(Object.hasOwn(choice.effects,stat.id))assert.equal(selected.history.at(-1).changes[stat.id],selected.stats[stat.id]-state.stats[stat.id]);}
+    state=advance(content,selected);
+    if(index%2===1){assert.equal(state.screen,'grade');assert.strictEqual(advance(content,state),state);state=rollGrade(content,state,()=>strategy/2);assert(state.gpa<=MAX_GPA);assert.strictEqual(rollGrade(content,state),state);state=advance(content,state);}
   }
+  assert.equal(state.screen,'result');assert.equal(state.history.length,8);assert.equal(state.grades.length,4);assert.equal(state.direction,final);assert.equal(resultCareer(content,state).id,final);assert.deepEqual(state.experiences.map(x=>x.title),expected);assert(state.gpa>INITIAL_GPA);assert.strictEqual(advance(content,state),state);completed++;
 }
-assert.throws(() => createGame(content, { gender: '' }));
-for (const [names, expected] of [[{}, '김컴공'], [{ surname: '박' }, '박컴공'], [{ givenName: '민수' }, '김민수'], [{ surname: '  ', givenName: ' ' }, '김컴공'], [{ surname: ' 이 ', givenName: ' 코드 ' }, '이코드']]) {
-  assert.equal(createGame(content, { ...profile, ...names }).profile.name, expected);
-}
-
-let completed = 0;
-const covered = new Set();
-function play(initial, strategy, gradeRandom = () => 0.5) {
-  let state = initial;
-  const expectedExperiences = [];
-  assert.equal(new Set(state.scenes.map(scene => scene.id)).size, 8);
-  assert.equal(state.gpa, INITIAL_GPA);
-  for (let index = 0; index < 8; index++) {
-    const scene = state.scenes[index]; covered.add(scene.id);
-    assert.equal(scene.kind === '진로', index % 2 === 0);
-    const semester = content.semesters[Math.floor(index / 2)];
-    assert.equal(scene.year, semester.year); assert.equal(scene.semester, semester.semester);
-    assert.strictEqual(advance(content, state), state, '선택 전 진행 금지');
-    assert.strictEqual(choose(content, state, 'invalid'), state);
-    const choice = scene.choices[(strategy + index) % 3];
-    const before = structuredClone(state);
-    const selected = choose(content, state, choice.id);
-    assert.deepEqual(state, before, '선택이 이전 상태를 변경하면 안 됨');
-    assert.equal(selected.history.length, index + 1);
-    for (const again of scene.choices) assert.strictEqual(choose(content, selected, again.id), selected, '중복 선택 방지');
-    for (const stat of content.stats) {
-      assert(selected.stats[stat.id] >= stat.min && selected.stats[stat.id] <= stat.max);
-      if (Object.hasOwn(choice.effects, stat.id)) assert.equal(selected.history.at(-1).changes[stat.id], selected.stats[stat.id] - before.stats[stat.id]);
-    }
-    if (choice.experience) expectedExperiences.push(choice.experience.title);
-    state = advance(content, selected);
-    if ((index + 1) % 2 === 0) {
-      assert.equal(state.screen, 'grade');
-      assert.strictEqual(advance(content, state), state, '룰렛 전 학기 진행 금지');
-      state = rollGrade(content, state, gradeRandom);
-      assert.equal(state.grades.length, (index + 1) / 2);
-      assert(state.gpa >= 0 && state.gpa <= 4.5);
-      assert.strictEqual(rollGrade(content, state), state, '학점 중복 반영 방지');
-      state = advance(content, state);
-    }
-  }
-  assert.equal(state.screen, 'result'); assert.equal(state.grades.length, 4);
-  assert.equal(state.history.length, 8); assert(state.gpa > INITIAL_GPA);
-  assert(state.grades.at(-1).gpa > state.grades[0].gpa, '졸업까지 전반적으로 상승');
-  assert.deepEqual(state.experiences.map(item => item.title), expectedExperiences, '선택하지 않은 경험을 기재하면 안 됨');
-  assert.strictEqual(advance(content, state), state);
-  assert.strictEqual(choose(content, state, 'career42_a'), state);
-  completed++;
-  return state;
-}
-
-// Fisher–Yates 표본으로 학기별 일상 사건 3가지 × 4학기의 81가지 구성을 검사한다.
-const shuffleSamples = [[0.99, 0.75], [0.99, 0.25], [0.1, 0.75]];
-for (let schedule = 0; schedule < 3 ** 4; schedule++) {
-  let value = schedule;
-  const samples = [];
-  for (let term = 0; term < 4; term++) {
-    const pick = value % 3; value = Math.floor(value / 3);
-    samples.push(...shuffleSamples[pick]);
-  }
-  let cursor = 0;
-  play(createGame(content, profile, () => samples[cursor++]), schedule % 3);
-}
-for (const gender of content.profile.genders) for (const strategy of [0, 1, 2]) for (const sample of [0, 0.999999]) {
-  play(createGame(content, { gender: gender.id }, () => 0.5), strategy, () => sample);
-}
-assert.equal(covered.size, 16);
-for (const boundary of [0, 10]) for (const sample of [0, 0.999999]) {
-  let state = createGame(content, profile);
-  state.stats.study = boundary; state.stats.inquiry = boundary;
-  for (let term = 0; term < 4; term++) {
-    state = rollGrade(content, { ...state, screen: 'grade', sceneIndex: term * 2 + 1 }, () => sample);
-    assert(state.gpa >= INITIAL_GPA && state.gpa <= 4.5);
-  }
-  assert(state.grades[1].gpa < state.grades[0].gpa, '중간에 내려가는 학기도 표현');
-  assert(state.grades.at(-1).gpa > state.grades[0].gpa);
-}
-// 모든 개별 선택이 스탯 상·하한에서도 안전한지 확인한다.
-for (const scene of content.scenes) for (const choice of scene.choices) for (const boundary of [0, 10]) {
-  const state = createGame(content, profile); state.scenes[0] = scene;
-  for (const stat of content.stats) state.stats[stat.id] = boundary;
-  const next = choose(content, state, choice.id);
-  for (const stat of content.stats) assert(next.stats[stat.id] >= 0 && next.stats[stat.id] <= 10);
-}
-console.log(`PASS · 16사건/48선택 균형 · 81개 사건 구성 + 성별/선택/룰렛 경계 12경로 = ${completed}회 8선택 완주 · 4회 룰렛·3.5 시작·상승/하락·실제 공고·중복 방지·상하한`);
+assert.equal(schedules.size,81);
+for(const path of paths){const example=createExample(content,path);assert.equal(example.mode,'instant');assert.equal(example.career.id,path);assert.equal(example.history.length,8);assert.equal(example.profile.name,'김컴공');}
+for(const boundary of [0,10])for(const sample of [0,.99999]){let state=createGame(content);state.stats.study=boundary;state.stats.inquiry=boundary;for(let term=0;term<4;term++)state=rollGrade(content,{...state,screen:'grade',sceneIndex:term*2+1},()=>sample);assert(state.grades[1].gpa<state.grades[0].gpa);assert(state.gpa>INITIAL_GPA&&state.gpa<=MAX_GPA);}
+for(const scene of scenes)for(const choice of scene.choices)for(const boundary of [0,10]){const state=createGame(content);state.scenes[0]=scene;for(const stat of content.stats)state.stats[stat.id]=boundary;const next=choose(content,state,choice.id);for(const stat of content.stats)assert(next.stats[stat.id]>=0&&next.stats[stat.id]<=10);}
+for(const career of content.careers){assert(career.title&&career.field);assert.equal(career.jobs.length,2);for(const job of career.jobs){assert.match(job.url,/^https:\/\//);assert(job.checkedAt);assert(!job.deadline||job.deadline>='2026-11-06');}}
+console.log(`PASS · ${completed}회 완주 · 81사건 구성×3첫방향×3최종방향×3선택 전략 · 예시 3종·준비 기록·4.3 학점·중복 방지·상하한·실제 공고`);

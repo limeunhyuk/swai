@@ -21,7 +21,7 @@ const server = createServer(async (request, response) => {
     response.end(Buffer.from(await result.arrayBuffer()));
     return;
   }
-  const path = resolve(root, '.' + (pathname === '/' ? '/index.html' : pathname));
+  const path = resolve(root, '.' + (pathname === '/' || /^\/r\/[^/]+\/?$/.test(pathname) ? '/index.html' : pathname));
   if (!path.startsWith(root.endsWith(sep) ? root : root + sep)) {
     response.writeHead(403).end();
     return;

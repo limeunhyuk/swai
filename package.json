@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/serve.mjs",
-    "test": "node scripts/check-game.mjs && node scripts/check-record.mjs"
+    "test": "node scripts/check-game.mjs && node scripts/check-record.mjs && node scripts/check-campaign.mjs"
   }
 }
