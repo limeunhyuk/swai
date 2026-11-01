@@ -10,6 +10,7 @@ await mkdir(join(root, 'public')); await mkdir(join(root, 'scripts'));
 await writeFile(join(root, 'package.json'), '{"type":"module"}');
 for (const file of ['public/campaigns.js','scripts/add-campaign.mjs']) await copyFile(new URL('../' + file, import.meta.url), join(root, file));
 const invoke = (...args) => spawnSync(process.execPath, [join(root, 'scripts/add-campaign.mjs'), ...args], { encoding: 'utf8' });
+assert.notEqual(invoke('c1','kakao','chat-unspecified','-','-','1').status, 0, 'c1 호환 주소를 새 게시물로 재사용 금지');
 assert.equal(invoke('e01','everytime','yonsei-free','20261103','0900','1').status, 0);
 const first = await readFile(join(root, 'public/campaigns.js'), 'utf8');
 assert(first.includes('20261103'));

@@ -26,4 +26,4 @@
 | e7 | ev | 연합 취업게시판 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/e7) | 미등록 | 예약·미게시 |
 | e8 | ev | 연합 홍보게시판 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/e8) | 미등록 | 예약·미게시 |
 | f1 | fm | 인공지능 AI 게시판 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/f1) | 미등록 | 예약·미게시 |
-| c1 | ka | 카카오톡 대화방 미지정 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/c1) | 미등록 | 예약·미게시 |
+| k1 | ka | 카카오톡 대화방 미지정 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/k1) | 미등록 | 예약·미게시 |

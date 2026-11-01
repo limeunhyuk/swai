@@ -4,6 +4,7 @@ import { campaigns, campaignPath, campaignSource } from '../public/campaigns.js'
 // 예약: 날짜/시각에 -를 사용. 실제 게시 후 같은 코드에 날짜/시각/원문 주소를 한 번 등록한다.
 const [code, platform, board, rawDate, rawTime, sequence, postUrl = ''] = process.argv.slice(2);
 const date = rawDate === '-' ? '' : rawDate, time = rawTime === '-' ? '' : rawTime;
+if (code === 'c1') throw new Error('c1은 k1의 이전 호환 주소입니다. 새 카카오톡 글에는 k2 등 새 코드를 사용해주세요.');
 if (!/^[a-z][0-9]{1,4}$/.test(code || '') || !['kakao','everytime','dcinside','arcalive','fmkorea'].includes(platform) ||
     !/^[a-z0-9-]{1,24}$/.test(board || '') || !/^\d{8}$|^$/.test(date ?? 'invalid') || !/^([01]\d|2[0-3])[0-5]\d$|^$/.test(time ?? 'invalid') ||
     Boolean(date) !== Boolean(time) || !/^[1-9]\d?$/.test(sequence || '')) {

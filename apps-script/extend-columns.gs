@@ -5,7 +5,7 @@ function extendSwaiColumns() {
   if (!spreadsheet || spreadsheet.getId() !== '1vjLlxDEFvDrCS6gyeTJrcVk8VHM8LfXQbAwXqYQzfAk') throw new Error('기존 SWAI 스프레드시트에서 실행해주세요.');
   var master = ['id','landingUrl','ip','referer','time_stamp','utm','device'];
   var final = ['id','email','advice'];
-  var details = ['기록형식','단계','진행방식','홍보코드','게시판','게시판코드','게시일','게시시각','홍보글URL','기록ID','방문ID','게임ID','선택ID','공고ID','콘텐츠버전','테스트'];
+  var details = ['기록형식','단계','진행방식','홍보코드','게시판','게시판코드','기록ID','방문ID','게임ID','선택ID','공고ID','콘텐츠버전','테스트'];
   var plans = [['tab_master', master, master.concat(details)], ['tab_final', final, final.concat(master.slice(1), details)]];
   // 두 탭을 먼저 검토한 뒤 변경한다.
   plans.forEach(function(plan) {
@@ -27,7 +27,7 @@ function extendSwaiColumns() {
     sheet.getRange(1,1,1,all.length).setFontWeight('bold').setBackground('#203b4a').setFontColor('#ffffff');
     sheet.getRange(1,1,Math.max(2,sheet.getLastRow()),all.length).setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
     sheet.setColumnWidths(1,all.length,130);
-    ['landingUrl','referer','홍보글URL'].forEach(function(header) { sheet.setColumnWidth(all.indexOf(header)+1,260); });
+    ['landingUrl','referer'].forEach(function(header) { sheet.setColumnWidth(all.indexOf(header)+1,260); });
     if(plan[0] === 'tab_final') sheet.setColumnWidth(all.indexOf('advice')+1,360);
   });
   SpreadsheetApp.flush();

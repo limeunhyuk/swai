@@ -1,5 +1,5 @@
 import { EVENT_LABELS } from '../public/record-schema.js';
-import { campaigns } from '../public/campaigns.js';
+import { campaignByCode } from '../public/campaigns.js';
 
 // 기존 URL/JSON 기록과 열을 분리한 새 기록을 함께 읽는다. 과거 행을 수정하지 않는다.
 export function decodeLegacyRows(visits, feedback) {
@@ -31,8 +31,8 @@ export function decodeLegacyRows(visits, feedback) {
     } catch { /* 예전 의견은 보존하며 새 집계에서는 제외한다. */ }
   }
   const unique = (rows, key) => [...new Map(rows.map(row => {
-    const item = campaigns.find(item => item.code === row.campaign_code);
-    return [row[key], item ? { ...row, board: item.board, posted_date: item.date || row.posted_date, posted_time: item.time || row.posted_time, post_url: item.postUrl || row.post_url } : row];
+    const item = campaignByCode(row.campaign_code);
+    return [row[key], item ? { ...row, campaign_code: item.code, board: item.board, posted_date: item.date || row.posted_date, posted_time: item.time || row.posted_time, post_url: item.postUrl || row.post_url } : row];
   })).values()];
   return { events: unique(events, 'event_id'), feedback: unique(comments, 'feedback_id') };
 }

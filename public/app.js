@@ -113,7 +113,7 @@ function showGrade() {
         focusHeading();
       });
       document.querySelector('#continue-button').focus({ preventScroll: true });
-    }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 100 : 900);
+    }, 900);
 }
 
 function showResult() {

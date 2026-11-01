@@ -1,1 +1,1 @@
-landingUrl	ip	referer	time_stamp	utm	device	기록형식	단계	진행방식	홍보코드	게시판	게시판코드	게시일	게시시각	홍보글URL	기록ID	방문ID	게임ID	선택ID	공고ID	콘텐츠버전	테스트
+landingUrl	ip	referer	time_stamp	utm	device	기록형식	단계	진행방식	홍보코드	게시판	게시판코드	기록ID	방문ID	게임ID	선택ID	공고ID	콘텐츠버전	테스트

@@ -1,4 +1,4 @@
-import { campaigns, campaignSource } from '../../public/campaigns.js';
+import { campaignByCode, campaignSource } from '../../public/campaigns.js';
 import { EVENT_LABELS } from '../../public/record-schema.js';
 import { SHEET_SCHEMA_VERSION } from './storage-schema.mjs';
 
@@ -13,7 +13,7 @@ export function validateRecord(input) {
     run_id: input.run_id || '', source: input.source.trim(), content_version: input.content_version, is_test: input.is_test === true };
   if (input.mode !== undefined && !['game', 'instant'].includes(input.mode)) return null;
   record.mode = input.mode || 'game';
-  const campaign = campaigns.find(item => item.code === input.campaign_code);
+  const campaign = campaignByCode(input.campaign_code);
   if (input.campaign_code && !campaign) return null;
   Object.assign(record, { campaign_code: campaign?.code || '', board: campaign?.board || '', board_label: campaign?.label || campaign?.board || '',
     posted_date: campaign?.date || '', posted_time: campaign?.time || '', post_url: campaign?.postUrl || '', sequence: campaign?.sequence || '', referer: '' });
@@ -64,7 +64,6 @@ export function legacyInsert(record, now = new Date(), schema = 3) {
     time_stamp: time, utm: cellText(record.source), device: record.device || 'unknown',
     '기록형식': schema === 3 ? 'swai-v3' : 'swai-v2', '단계': EVENT_LABELS[record.event_type || 'feedback'], '진행방식': record.mode === 'instant' ? '예시' : '게임',
     '홍보코드': record.campaign_code || '', '게시판': record.board_label || '', '게시판코드': record.board || '',
-    '게시일': record.posted_date || '', '게시시각': record.posted_time || '', '홍보글URL': record.post_url || '',
     '기록ID': record.event_id || record.feedback_id, '방문ID': record.visit_id, '게임ID': record.run_id || '',
     '선택ID': record.choice_id || '', '공고ID': record.job_id || '', '콘텐츠버전': record.content_version, '테스트': record.is_test === true
   };

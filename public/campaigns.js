@@ -193,7 +193,7 @@ export const campaigns = [
     "sequence": 1
   },
   {
-    "code": "c1",
+    "code": "k1",
     "platform": "kakao",
     "board": "chat-unspecified",
     "label": "카카오톡 대화방 미지정",
@@ -206,9 +206,10 @@ export const campaigns = [
 
 export const campaignSource = item => platformCodes[item.platform] || item.platform;
 export const campaignPath = item => /^[a-z]0[0-9]+$/.test(item.code) ? '/r/' + item.code : '/' + item.code;
+export const campaignByCode = code => campaigns.find(item => item.code === (code === 'c1' ? 'k1' : code));
 export function campaignForUrl(url) {
   const code = /^\/(?:r\/)?([a-z][0-9]{1,4})\/?$/.exec(url.pathname)?.[1];
-  return code ? campaigns.find(item => item.code === code) : undefined;
+  return code ? campaignByCode(code) : undefined;
 }
 export function sourceForUrl(url) {
   const item = campaignForUrl(url);
