@@ -21,7 +21,7 @@ HTML·CSS·JavaScript와 사전 작성 콘텐츠로 구성한 중간 발표용 �
 
 ## 실제 통계 연결
 
-브라우저 → Netlify 함수 → 기존 Apps Script → Google Sheets로 저장한다. 기존 배포의 로그인 없는 GET/JSONP insert를 재사용한다. 2026-11-02 가상 방문·이메일만 입력한 피드백의 저장 성공 응답을 확인했고 로컬 연결을 활성화했다. Netlify에는 기존 배포 주소 환경변수를 넣고 새 코드를 배포해야 한다. 미연결·저장 응답 미확인을 성공으로 표시하지 않는다.
+브라우저 → Netlify 함수 → 기존 Apps Script → Google Sheets로 저장한다. 기존 배포의 로그인 없는 GET/JSONP insert를 재사용한다. 2026-11-02 GitHub main 업로드·Netlify 환경변수 설정·재배포를 완료했다. [실제 사이트](https://savecs.netlify.app/)에서 기록 설정 활성화와 이메일만 입력한 피드백의 저장 성공·입력 초기화를 확인했다. 미연결·저장 응답 미확인을 성공으로 표시하지 않는다.
 
 기존 `project_임시`의 `tab_master`·`tab_final` 열을 유지하며, 출처는 utm, 단계별 세부는 landingUrl·advice의 구조화된 값으로 남긴다. 새 Google 로그인·탭·스크립트 배포는 필요 없다. 자세한 저장 형식과 집계는 [SETUP.md](SETUP.md)에 있다. 기존 원자료를 읽거나 삭제한 것은 아니다.
 

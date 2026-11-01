@@ -9,9 +9,11 @@
 - 로컬 `.env`의 `APPS_SCRIPT_URL`에 기존 `/exec` 주소를 사용한다. 이 주소는 기존 임시 코드에서 이미 준비했다.
 - 새 비밀키나 인증 설정은 추가하지 않는다.
 - `.env`는 Git에서 제외된다. 수정 후 로컬 서버를 다시 실행한다.
-- Netlify 재배포 시 환경변수 `APPS_SCRIPT_URL`에 같은 기존 주소를 넣는다. 기록 함수와 화면은 동일 저장소에서 배포한다. 현재 로컬 변경을 아직 push/재배포하지 않았다.
+- Netlify 환경변수 `APPS_SCRIPT_URL`에 같은 기존 주소를 사용한다. 2026-11-02 GitHub main에 제품을 push하고 이 값을 Netlify에 설정한 뒤 재배포를 완료했다. 기록 함수와 화면은 동일 저장소에서 배포한다.
 
 브라우저는 같은 사이트의 `/.netlify/functions/record`에 POST로 보내고, 함수가 기존 Apps Script의 `action=insert&table=...&data=...&callback=swai_saved`를 호출한다. Google의 JSONP 응답은 실행하지 않고 JSON만 파싱한다. 성공 여부와 반환 데이터가 요청과 일치해야 저장 성공으로 응답한다.
+
+배포본 확인: 공개 사이트의 기록 설정 enabled:true, 12활동·4회 룰렛·이력서 완주, 모집 상세 열기, 이메일만 제출 후 저장 성공 표시와 입력 초기화를 확인했다. 점검은 `?utm=deploy-check&test=1`과 example.invalid 가상 이메일을 사용했다. 브라우저 오류·경고 없음. 원자료를 별도로 다시 읽어 모든 단계 행을 검증한 결과는 아니다.
 
 ## 기존 열에 저장되는 내용
 
