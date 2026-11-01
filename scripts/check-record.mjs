@@ -26,20 +26,28 @@ try {
   globalThis.fetch = async () => { throw new Error('network'); };
   assert.equal((await handler(request(event))).status, 502);
   assert.equal((await handler(request({ ...event, visitor_id: '' }))).status, 400);
-  let savedTable;
+  let savedTable, savedData;
   globalThis.fetch = async target => {
     const query = new URL(target).searchParams;
     assert.equal(query.get('action'), 'insert');
     savedTable = query.get('table');
     const data = JSON.parse(query.get('data'));
+    savedData = data;
     return new Response(`swai_saved(${JSON.stringify({ success: true, data })})`);
   };
   assert.equal((await handler(request(event))).status, 200); assert.equal(savedTable, 'tab_master');
   assert.equal((await handler(request(feedback))).status, 200); assert.equal(savedTable, 'tab_final');
+  assert.equal((await handler(request({ ...event, campaign_code: 'c1', referer: 'https://example.test/post/1', source: 'wrong' }), { ip: '203.0.113.7' })).status, 200);
+  assert.equal(savedData.ip, '203.0.113.7'); assert.equal(savedData.referer, 'https://example.test/post/1');
+  assert.equal(savedData.utm, 'ka'); assert.equal(savedData['홍보코드'], 'c1');
+  assert.equal(validateRecord({ ...event, referer: 'javascript:alert(1)' }), null);
+  assert.equal(validateRecord({ ...event, campaign_code: 'z999' }), null);
   const mapped = legacyInsert(validateRecord(event));
   assert.equal(mapped.data.id, base.visitor_id); assert.equal(mapped.data.utm, base.source);
-  assert.equal(new URL(mapped.data.landingUrl).searchParams.get('event_id'), event.event_id);
-  assert.equal(JSON.parse(legacyInsert(validateRecord(feedback)).data.advice).email, feedback.email);
+  assert.equal(mapped.data.landingUrl, 'https://savecs.netlify.app/');
+  assert.equal(mapped.data['기록ID'], event.event_id); assert.equal(mapped.data['단계'], '방문');
+  assert.equal(legacyInsert(validateRecord({ ...feedback, text: '보기 쉬운 의견' })).data.advice, '보기 쉬운 의견');
+  assert.equal(JSON.parse(legacyInsert(validateRecord(feedback), new Date(), 2).data.advice).email, feedback.email);
   globalThis.fetch = async () => new Response('swai_saved({"success":true,"data":{}})');
   assert.equal((await handler(request(event))).status, 502, '기존 API도 저장 요청의 응답 내용을 확인');
 } finally {
@@ -75,21 +83,28 @@ assert.equal(a[7], 1); assert.equal(a[8], 1); assert.equal(a[9], 1);
 assert.equal(b[5], 0, '시작이 없는 판의 완료는 비율에 포함하지 않음');
 assert.equal(a[10], 2); assert.equal(a[11], 1); assert.equal(a[12], 1);
 assert.equal(buildSummary([], [])[0][7], '', '분모 0은 빈 값');
-const legacyEvents = events.map((item, index) => legacyInsert({ ...item, kind: 'event', event_id: `legacy-${index}`, content_version: 'test' }).data);
-const legacyFeedback = comments.map(item => legacyInsert({ ...item, kind: 'feedback' }).data);
+const legacyEvents = events.map((item, index) => legacyInsert({ ...item, kind: 'event', event_id: `legacy-${index}`, content_version: 'test' }, new Date(), 2).data);
+const legacyFeedback = comments.map(item => legacyInsert({ ...item, kind: 'feedback' }, new Date(), 2).data);
 const decoded = decodeLegacyRows([...legacyEvents, legacyEvents[0], { id: 'old', landingUrl: 'https://old.example/' }], [...legacyFeedback, legacyFeedback[0], { advice: '과거 의견' }]);
 assert.equal(decoded.events.length, events.length);
 assert.equal(decoded.feedback.length, comments.length);
 assert.deepEqual(buildSummary(decoded.events, decoded.feedback), summary, '기존 두 시트로도 같은 출처별 집계가 나와야 함');
+const modernEvents = events.map((item,index) => legacyInsert({ ...item, kind: 'event', event_id: `legacy-${index}`, content_version: 'test' }).data);
+const modernFeedback = comments.map(item => legacyInsert({ ...item, kind: 'feedback' }).data);
+const mixed = decodeLegacyRows([...legacyEvents, ...modernEvents], [...legacyFeedback, ...modernFeedback]);
+assert.equal(mixed.events.length, events.length); assert.equal(mixed.feedback.length, comments.length);
+assert.deepEqual(buildSummary(mixed.events, mixed.feedback), summary, '구형·신형 기록이 섞여도 같은 집계');
 assert.deepEqual(parseCsv('\uFEFFid,advice\r\n1,"쉼표, 줄바꿈\n인용 ""문장"""\r\n'), [{ id: '1', advice: '쉼표, 줄바꿈\n인용 "문장"' }]);
 console.log('PASS · 기록 입력·이메일 선택·미연결/실패/ID 확인 · 커뮤니티 집계·브라우저 중복·테스트 제외·피드백 구분');
 
 // 브라우저 모듈의 유입 고정·재전송 ID·저장소 차단 동작도 검증한다.
-const { createTracker, readLocal, writeLocal } = await import('../public/tracking.js');
-const savedGlobals = { location: globalThis.location, localStorage: globalThis.localStorage, fetch: globalThis.fetch };
+const { createTracker, readLocal, writeLocal, makeId } = await import('../public/tracking.js');
+assert.match(makeId(), /^[A-Za-z0-9_-]{12}$/);
+const savedGlobals = { location: globalThis.location, localStorage: globalThis.localStorage, fetch: globalThis.fetch, document: globalThis.document };
 try {
   globalThis.location = { href: 'https://example.test/?utm=community-a', hostname: 'example.test', origin: 'https://example.test', pathname: '/' };
   globalThis.localStorage = { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); } };
+  globalThis.document = { referrer: 'https://example.test/promotion/1' };
   writeLocal('test', 'remember'); assert.equal(readLocal('test'), 'remember');
   const posts = [];
   globalThis.fetch = async (url, options) => {
@@ -100,6 +115,7 @@ try {
   const tracker = createTracker('test');
   await tracker.event('visit');
   assert.equal(posts.length, 1);
+  assert.equal(posts[0].referer, 'https://example.test/promotion/1');
   globalThis.location.href = 'https://example.test/?utm=changed';
   await tracker.event('start', { run_id: 'run-1', gender: 'male' });
   assert.equal(posts.at(-1).source, 'community-a', '방문 중 URL 변경과 무관하게 출처 유지');
@@ -133,7 +149,7 @@ assert.equal(new Set(campaigns.map(item => item.code)).size, campaigns.length);
 assert(campaigns.every(item => campaignSource(item).length <= 80));
 const instant = { ...base, run_id: 'instant-1', mode: 'instant', kind: 'event', event_id: 'instant-event', event_type: 'instant_view' };
 assert.equal(validateRecord(instant).mode, 'instant');
-assert.equal(new URL(legacyInsert(validateRecord(instant)).data.landingUrl).searchParams.get('mode'), 'instant');
+assert.equal(legacyInsert(validateRecord(instant)).data['진행방식'], '예시');
 assert.equal(validateRecord({ ...instant, mode: 'bad' }), null);
 const sourceA = 'everytime__yonsei-free__20261103__0900__p01';
 const sourceB = 'everytime__yonsei-free__20261103__1900__p02';
@@ -142,12 +158,21 @@ const sampleEvents = [
   ...['visit','start','complete','job_click'].map(event_type => ({ ...base, mode: 'game', source: sourceB, visit_id: 'visit-other', event_type }))
 ];
 const split = buildSummary(sampleEvents, []);
-const platform = split.find(row => row[0] === '플랫폼: everytime');
+const platform = split.find(row => row[0] === '플랫폼: ev');
 assert.equal(platform[1], 1, '여러 게시물의 고유 브라우저 중복 제거');
 assert.equal(platform[2], 2); assert.equal(platform[5], 1); assert.equal(platform[6], 1);
 assert.equal(platform[13], 1); assert.equal(platform[14], 1); assert.equal(platform[15], 1); assert.equal(platform[16], 1);
 assert.equal(split.find(row => row[0] === sourceA)[5], 0, '즉시 보기는 게임 완주가 아님');
 assert.equal(split.find(row => row[0] === sourceA)[15], 1, '게임을 시작하지 않은 예시 공고 클릭 포함');
-assert(split.some(row => row[0] === '게시판: everytime__yonsei-free'));
-assert(split.some(row => row[0] === '게시일: everytime__yonsei-free__20261103'));
+assert(split.some(row => row[0] === '게시판: ev__yonsei-free'));
+assert(split.some(row => row[0] === '게시일: ev__yonsei-free__20261103'));
+const kakao = new URL('https://example.test/c1');
+assert.equal(sourceForUrl(kakao), 'ka');
+assert.equal(sourceForUrl(new URL('https://example.test/d1')), 'dc');
+assert.equal(sourceForUrl(new URL('https://example.test/d01')), 'dc');
+assert.equal(sourceForUrl(new URL('https://example.test/f1')), 'fm');
+assert.equal(sourceForUrl(new URL('https://example.test/e1')), 'ev');
+assert.equal(sourceForUrl(new URL('https://example.test/a1')), 'ar');
+const byPost = buildSummary([{ ...base, source: 'dc', board: 'web-game', campaign_code: 'd1', event_type: 'visit' }], []);
+assert.equal(byPost.find(row => row[0] === '게시물: d1')[1], 1);
 console.log('PASS · 짧은 링크 대응·기존 UTM·미등록 코드·게시 회차/플랫폼/게시판/날짜별 중복 제거·예시/게임 집계 분리');

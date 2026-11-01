@@ -14,7 +14,7 @@ h1,h2,h3{line-height:1.4;letter-spacing:-.035em}
 h1[tabindex]:focus{outline:none}
 .shell{width:min(100% - 40px,640px);margin:0 auto}
 .site-header{height:94px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:12px}
-.brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;letter-spacing:-.04em}
+.brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;letter-spacing:-.04em;color:inherit;background:none;border:0;padding:0;text-align:left}
 .brand-mark{display:grid;place-items:center;width:30px;height:30px;color:var(--accent);border:1px solid #3b625c;border-radius:8px;font:700 12px monospace}
 .edition{font-size:11px;color:var(--muted)}
 .edition span{margin-left:6px;font:11px monospace;color:#93a3b6}
@@ -30,7 +30,6 @@ main{min-height:70vh}
 .journey-icon{font:18px ui-monospace,monospace;color:var(--accent);width:44px;height:44px;background:#1b302f;border-radius:12px;display:grid;place-items:center;flex-shrink:0}
 .journey strong{font-size:14px;font-weight:600}
 .journey p{color:var(--muted);font-size:12px;margin-top:2px}
-.journey-end{margin-left:auto;color:#8c9ba9;font-size:22px}
 .setup-card{padding:26px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
 .section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .section-heading h2,.suggestions h2{font-size:18px}
@@ -236,7 +235,7 @@ dialog .jobs-note{border-top:1px solid var(--line);padding-top:16px;margin-top:2
 .instant-loading h1{font-size:32px;margin:20px 0}
 #instant-status{color:var(--accent);margin-top:28px;font-size:15px}
 .loading-track{height:3px;background:var(--line);margin:24px auto;width:180px;overflow:hidden}
-.loading-track span{display:block;height:100%;background:var(--accent);animation:example-progress 1.6s linear forwards}
+.loading-track span{display:block;height:100%;background:var(--accent);animation:example-progress 2.4s linear forwards}
 @keyframes example-progress{from{width:0}to{width:100%}}
 .career-field{margin-top:18px;padding-top:16px;border-top:1px solid #47606a}
 .career-field span{display:block;color:var(--muted);font-size:11px}

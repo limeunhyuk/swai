@@ -20,4 +20,9 @@ assert.notEqual(invoke('e04','everytime','yonsei-free','20261103','2500','1').st
 assert.equal(invoke('e04','everytime','yonsei-free','20261103','1900','2').status, 0);
 const table = await readFile(join(root, 'PROMOTION.md'), 'utf8');
 assert(table.includes('/r/e04') && table.includes('1900') && table.includes('미게시'));
+assert.equal(invoke('d5','dcinside','web-game','-','-','2').status, 0, '게시 전에도 예약 가능');
+assert.equal(invoke('d5','dcinside','programming','-','-','2').status, 1, '예약 출처 변경 차단');
+assert.equal(invoke('d5','dcinside','web-game','20261103','1200','2','https://example.test/post/1').status, 0);
+assert.equal(invoke('d5','dcinside','web-game','20261103','1200','2','https://example.test/post/2').status, 1, '확정 원문 재사용 차단');
+assert((await readFile(join(root, 'PROMOTION.md'), 'utf8')).includes('https://savecs.netlify.app/d5'));
 console.log('PASS · 임시 폴더의 홍보 코드 등록·재사용 차단·날짜/시각 검사·관리표 생성');

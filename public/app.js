@@ -3,6 +3,7 @@ import { createTracker, readLocal, writeLocal, makeId } from './tracking.js';
 
 const app = document.querySelector('#app');
 let content, state, tracker, recording = false;
+let instantTimer, gradeTimer;
 let profile = { surname: '', givenName: '' };
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const nameLabel = () => escape(state.profile.name);
@@ -19,10 +20,12 @@ function statsPanel(changes = {}) {
 }
 
 function showStart() {
+  clearInterval(instantTimer);
+  clearTimeout(gradeTimer);
   app.innerHTML = `<section class="start-screen"><div class="eyebrow"><span class="status-dot"></span> CAMPUS LIFE SIMULATOR</div>
     <h1 tabindex="-1">컴공으로<br><span>살아남기<span class="cursor" aria-hidden="true">_</span></span></h1>
     <p class="intro">3학년의 시작부터 졸업까지.<br>과제도, 연애도, 취업 준비도 내 선택대로.</p>
-    <div class="journey"><span class="journey-icon" aria-hidden="true">&lt;/&gt;</span><div><strong>4학기, 8번의 선택</strong><p>대학 생활의 끝에서 나만의 이력서를 만나보세요.</p></div><span class="journey-end" aria-hidden="true">↗</span></div>
+    <div class="journey"><span class="journey-icon" aria-hidden="true">&lt;/&gt;</span><div><strong>4학기, 8번의 선택</strong><p>대학 생활의 끝에서 나만의 이력서를 만나보세요.</p></div></div>
     <div class="home-actions"><div><button class="primary instant-button" id="instant-button">이력서 즉시 확인 <span aria-hidden="true">↗</span></button><p>예시 이력서와 추천 직무, 실제 채용공고를 바로 확인해요.</p></div><div><button class="secondary" id="setup-button">3학년 시작하기 <span aria-hidden="true">→</span></button><p>8번의 선택으로 나만의 대학 생활과 이력서를 만들어요.</p></div></div>
     <p class="local-notice">${recording ? '방문·플레이 흐름은 익명으로 기록돼요.' : '미리보기 · 현재는 체험 기록과 의견을 저장할 수 없어요.'}</p></section>`;
   document.querySelector('#instant-button').addEventListener('click', showInstant);
@@ -47,11 +50,11 @@ function showInstant() {
   state = { ...createExample(content, content.careers[index].id), runId: makeId() }; track('instant_start');
   app.innerHTML = '<section class="instant-loading"><p class="eyebrow">PREVIEW</p><h1 tabindex="-1">예시 대학 생활을<br>준비하고 있어요</h1><p id="instant-status" role="status">3학년 1학기 실행중…</p><div class="loading-track"><span></span></div></section>'; focusHeading();
   let term = 0;
-  const timer = setInterval(() => {
+  instantTimer = setInterval(() => {
     term++;
-    if (term === content.semesters.length) { clearInterval(timer); track('instant_view'); showResult(); focusHeading(); }
+    if (term === content.semesters.length) { clearInterval(instantTimer); track('instant_view'); showResult(); focusHeading(); }
     else document.querySelector('#instant-status').textContent = semesterLabel(content.semesters[term]) + ' 실행중…';
-  }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 100 : 400);
+  }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 100 : 600);
 }
 
 function direction(effects) {
@@ -96,7 +99,7 @@ function showGrade() {
 
     document.querySelector('#grade-reel').classList.add('rolling');
     document.querySelector('#grade-status').textContent = '이번 학기를 정리하는 중…';
-    setTimeout(() => {
+    gradeTimer = setTimeout(() => {
       state = rollGrade(content, state);
       const grade = state.grades.at(-1), delta = Math.round((grade.gpa - grade.previous) * 100) / 100;
       document.querySelector('.roulette-window').innerHTML = `<strong class="grade-number">${gpaLabel(grade.gpa)}</strong>`;
@@ -110,7 +113,7 @@ function showGrade() {
         focusHeading();
       });
       document.querySelector('#continue-button').focus({ preventScroll: true });
-    }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 100 : 1200);
+    }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 100 : 900);
 }
 
 function showResult() {
@@ -147,6 +150,7 @@ function focusHeading() { window.scrollTo({ top: 0, behavior: 'instant' }); docu
 try {
   const response = await fetch('/content.json'); if (!response.ok) throw new Error('Content unavailable');
   content = await response.json(); tracker = createTracker(content.version); showStart();
+  document.querySelector('#brand-home').addEventListener('click', () => { showStart(); focusHeading(); });
   tracker.available().then(enabled => {
     recording = enabled; if (enabled) tracker.event('visit');
     const notice = document.querySelector('.local-notice'); if (notice && enabled) notice.textContent = '방문·플레이 흐름은 익명으로 기록돼요.';

@@ -1,4 +1,4 @@
-import { sourceForUrl } from './campaigns.js';
+import { sourceForUrl, campaignForUrl } from './campaigns.js';
 
 const memory = new Map();
 export function readLocal(key, fallback = '') {
@@ -9,15 +9,18 @@ export function writeLocal(key, value) {
   memory.set(key, String(value));
   try { localStorage.setItem(key, String(value)); } catch { /* 저장 차단 시 현재 페이지에서만 기억한다. */ }
 }
-export const makeId = () => crypto.randomUUID();
+export const makeId = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), value => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'[value & 63]).join('');
 export function createTracker(version) {
   const params = new URL(location.href).searchParams;
+  const campaign = campaignForUrl(new URL(location.href));
   let visitor = readLocal('swai.visitor');
   if (!visitor) { visitor = makeId(); writeLocal('swai.visitor', visitor); }
   const context = { visitor_id: visitor, visit_id: makeId(), content_version: version,
-    landing_url: location.origin + location.pathname,
+    landing_url: location.origin + location.pathname + new URL(location.href).search,
     device: /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
     source: sourceForUrl(new URL(location.href)),
+    campaign_code: campaign?.code || '',
+    referer: typeof document === 'undefined' ? '' : document.referrer,
     is_test: params.get('test') === '1' || ['localhost', '127.0.0.1'].includes(location.hostname) };
   async function send(payload) {
     const response = await fetch('/.netlify/functions/record', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: AbortSignal.timeout(25000), keepalive: true });

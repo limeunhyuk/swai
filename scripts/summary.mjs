@@ -1,3 +1,5 @@
+import { platformCodes } from '../public/campaigns.js';
+
 export const SUMMARY_HEADERS = ['유입 출처', '고유 방문 브라우저', '방문 횟수', '게임 시작 횟수', '게임 시작 브라우저', '게임 완료 브라우저', '게임 모집 클릭 브라우저', '게임 시작률', '게임 완료율', '게임 모집 클릭률', '피드백 제출', '의견 포함', '이메일 포함', '즉시 보기 시작 브라우저', '예시 도달 브라우저', '예시 모집 클릭 브라우저', '예시 모집 클릭률'];
 
 export function buildSummary(events, feedback) {
@@ -5,11 +7,19 @@ export function buildSummary(events, feedback) {
   feedback = feedback.filter(row => row.is_test !== true && row.is_test !== 'TRUE');
   const sources = [...new Set(events.concat(feedback).map(row => row.source))].sort();
   const scopes = [{ label: '전체', match: () => true }, ...sources.map(source => ({ label: source, match: row => row.source === source }))];
-  const structured = sources.filter(source => /^(kakao|everytime|dcinside|arcalive|fmkorea)__/.test(source));
+  const dimensions = row => {
+    const parts = row.source.split('__'), platform = platformCodes[parts[0]] || parts[0];
+    if (!Object.values(platformCodes).includes(platform)) return [];
+    return [platform, row.board || parts[1] || '', row.posted_date || parts[2] || 'undated'];
+  };
   for (const [name, depth] of [['플랫폼', 1], ['게시판', 2], ['게시일', 3]]) {
-    for (const key of new Set(structured.map(source => source.split('__').slice(0, depth).join('__')))) {
-      scopes.push({ label: `${name}: ${key}`, match: row => row.source === key || row.source.startsWith(key + '__') });
+    const keyFor = row => { const parts = dimensions(row); return parts.length && (depth === 1 || parts[1]) ? parts.slice(0, depth).join('__') : ''; };
+    for (const key of new Set(events.concat(feedback).map(keyFor).filter(Boolean))) {
+      scopes.push({ label: `${name}: ${key}`, match: row => keyFor(row) === key });
     }
+  }
+  for (const code of new Set(events.concat(feedback).map(row => row.campaign_code).filter(Boolean))) {
+    scopes.push({ label: `게시물: ${code}`, match: row => row.campaign_code === code });
   }
   return scopes.map(({ label, match }) => {
     const rows = events.filter(match);
