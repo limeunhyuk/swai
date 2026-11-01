@@ -8,6 +8,8 @@ const event = { ...base, kind: 'event', event_id: 'event-1', event_type: 'visit'
 assert(validateRecord(event));
 assert.equal(validateRecord({ ...event, event_type: 'start' }), null);
 assert(validateRecord({ ...event, event_type: 'start', gender: 'male', mbti: 'INTP' }));
+assert(validateRecord({ ...event, event_type: 'start', gender: 'female' }), 'MBTI 없이 시작 기록 가능');
+assert.equal(validateRecord({ ...event, event_type: 'start', gender: 'male', mbti: 'invalid' }), null);
 assert.equal(validateRecord({ ...event, event_type: 'job_click', job_id: '' }), null);
 const feedback = { ...base, kind: 'feedback', feedback_id: 'feedback-1', text: '', email: 'qa@example.com' };
 assert(validateRecord(feedback), '이메일만 제출 가능');
@@ -99,7 +101,7 @@ try {
   await tracker.event('visit');
   assert.equal(posts.length, 1);
   globalThis.location.href = 'https://example.test/?utm=changed';
-  await tracker.event('start', { run_id: 'run-1', gender: 'male', mbti: 'INTP' });
+  await tracker.event('start', { run_id: 'run-1', gender: 'male' });
   assert.equal(posts.at(-1).source, 'community-a', '방문 중 URL 변경과 무관하게 출처 유지');
   assert.equal(posts[0].visit_id, posts.at(-1).visit_id);
   const sameBrowser = createTracker('test');

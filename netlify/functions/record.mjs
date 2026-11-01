@@ -23,8 +23,9 @@ export function validateRecord(input) {
     if (input.event_type === 'first_choice') { if (!idValid(input.choice_id)) return null; record.choice_id = input.choice_id; }
     if (input.event_type === 'job_click') { if (!idValid(input.job_id)) return null; record.job_id = input.job_id; }
     if (input.event_type === 'start') {
-      if (!['male', 'female'].includes(input.gender) || !/^[IE][NS][TF][JP]$/.test(input.mbti || '')) return null;
-      record.gender = input.gender; record.mbti = input.mbti;
+      if (!['male', 'female'].includes(input.gender)) return null;
+      if (input.mbti && !/^[IE][NS][TF][JP]$/.test(input.mbti)) return null;
+      record.gender = input.gender; record.mbti = input.mbti || '';
     }
   } else {
     if (!idValid(input.feedback_id) || !record.run_id || !textValid(input.text, 1000) || !textValid(input.email, 254)) return null;

@@ -189,9 +189,15 @@ input::placeholder{color:#a1aebb;opacity:.52}
 .resume-gpa{white-space:nowrap;font-family:ui-monospace,monospace}
 .resume-gpa strong{font-size:25px}
 .resume-gpa span{font-size:11px;color:#6e7a74}
-.resume-grades{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-.resume-grades>span{background:#e5e8df;border-radius:4px;font-size:10px;padding:5px 7px;color:#64716e}
-.resume-grades strong{font-family:ui-monospace,monospace;color:#344f45;margin-left:4px}
+.gpa-chart{margin-top:14px}
+.gpa-chart svg{display:block;width:100%;height:auto;overflow:visible}
+.gpa-baseline{stroke:#d6dad4;stroke-width:1}
+.gpa-line{fill:none;stroke:#537b6b;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.gpa-point{fill:#537b6b}
+.gpa-chart text{text-anchor:middle;font:12px ui-monospace,"Malgun Gothic",monospace}
+.gpa-value{fill:#344f45}
+.gpa-term{fill:#64716e}
+.career-card .career-family{font-size:12px;color:#aac0ca;margin-top:17px}
 .resume-experience{border-bottom:1px solid #daded7;padding:9px 0 14px;margin-bottom:7px}
 .resume-experience span{font-size:10px;color:#76827b}
 .resume-experience h4{margin:4px 0 5px;font-size:14px}

@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-02.2",
+  "version": "2026-11-02.3",
   "title": "컴공으로 살아남기",
   "subtitle": "대학생 키우기",
   "stats": [
@@ -70,24 +70,6 @@
         "id": "female",
         "label": "여자"
       }
-    ],
-    "mbti": [
-      "ENFJ",
-      "ENFP",
-      "ENTJ",
-      "ENTP",
-      "ESFJ",
-      "ESFP",
-      "ESTJ",
-      "ESTP",
-      "INFJ",
-      "INFP",
-      "INTJ",
-      "INTP",
-      "ISFJ",
-      "ISFP",
-      "ISTJ",
-      "ISTP"
     ]
   },
   "semesters": [
@@ -174,7 +156,7 @@
           "id": "career31_c",
           "label": "이번에는 전공 공부부터 단단히 하기",
           "effects": {
-            "study": 2,
+            "study": 1,
             "mental": 1
           },
           "feedback": "빈 저장소 대신 전공 노트가 채워졌다. 프로젝트는 다음 기회로 미뤘다."
@@ -193,7 +175,7 @@
           "label": "시험은 미래의 나에게 맡기고 나가기",
           "effects": {
             "relations": 2,
-            "mental": 1,
+            "mental": 2,
             "study": -1,
             "money": -1
           },
@@ -203,7 +185,7 @@
           "id": "date31_b",
           "label": "같이 공부하고 저녁만 먹자고 제안하기",
           "effects": {
-            "relations": 1,
+            "relations": 2,
             "study": 1,
             "money": -1
           },
@@ -214,6 +196,7 @@
           "label": "시험 끝나고 내가 맛있는 거 사겠다고 하기",
           "effects": {
             "study": 2,
+            "relations": 1,
             "mental": -1
           },
           "feedback": "약속을 잡고 책을 폈다. 집중하다가도 자꾸 메신저를 확인했다."
@@ -232,6 +215,7 @@
           "label": "팀원을 깨워서 함께 다시 맞추기",
           "effects": {
             "teamwork": 2,
+            "inquiry": 1,
             "mental": -1
           },
           "feedback": "새벽 통화 끝에 버전을 맞췄다. 다음부터 파일 공유 규칙을 정하기로 했다."
@@ -240,8 +224,8 @@
           "id": "team31_b",
           "label": "내가 정리하고 아침에 수정 내역 공유하기",
           "effects": {
-            "making": 1,
-            "teamwork": 1,
+            "making": 2,
+            "teamwork": 2,
             "mental": -2
           },
           "feedback": "발표는 살렸다. 대신 커피가 아침 식사가 됐다."
@@ -250,7 +234,7 @@
           "id": "team31_c",
           "label": "완성된 부분만 남기고 발표 범위 줄이기",
           "effects": {
-            "inquiry": 1,
+            "inquiry": 2,
             "mental": 1,
             "relations": -1
           },
@@ -270,6 +254,7 @@
           "label": "대타를 맡고 면담 자료를 따로 받아보기",
           "effects": {
             "money": 2,
+            "study": 1,
             "mental": -1
           },
           "feedback": "생활비는 확보했다. 놓친 설명은 퇴근 후 자료로 따라갔다."
@@ -278,7 +263,7 @@
           "id": "work31_b",
           "label": "대타를 거절하고 면담에 가기",
           "effects": {
-            "study": 1,
+            "study": 2,
             "inquiry": 1,
             "money": -1
           },
@@ -289,8 +274,7 @@
           "label": "다른 알바생과 시간을 나눠 맡기",
           "effects": {
             "money": 1,
-            "teamwork": 1,
-            "relations": 1
+            "teamwork": 1
           },
           "feedback": "서로 가능한 시간을 맞췄다. 조율 메시지가 과제보다 길어졌다."
         }
@@ -408,8 +392,8 @@
           "id": "citation32_b",
           "label": "내가 근거를 찾아 해당 부분을 고치기",
           "effects": {
-            "study": 1,
-            "inquiry": 1,
+            "study": 2,
+            "inquiry": 2,
             "mental": -2
           },
           "feedback": "출처를 붙이고 문장을 다시 썼다. 다음번에는 초안부터 함께 보기로 했다."
@@ -418,7 +402,7 @@
           "id": "citation32_c",
           "label": "검증 안 된 부분을 빼고 범위를 줄이기",
           "effects": {
-            "inquiry": 1,
+            "inquiry": 2,
             "mental": 1,
             "relations": -1
           },
@@ -438,7 +422,7 @@
           "label": "얼굴만 비추려다가 끝까지 있기",
           "effects": {
             "relations": 2,
-            "mental": 1,
+            "mental": 2,
             "study": -1,
             "money": -1
           },
@@ -449,6 +433,7 @@
           "label": "시험 끝나고 만나자고 답하기",
           "effects": {
             "study": 2,
+            "relations": 1,
             "mental": -1
           },
           "feedback": "단톡방 알림을 끄고 책을 폈다. 시험 뒤 약속은 잊지 않았다."
@@ -458,7 +443,7 @@
           "label": "야식만 포장해서 도서관 친구들과 나누기",
           "effects": {
             "study": 1,
-            "relations": 1,
+            "relations": 2,
             "money": -1
           },
           "feedback": "건배 대신 문제 번호를 맞췄다. 그래도 혼자는 아니었다."
@@ -507,8 +492,7 @@
           "label": "오픈소스 문서와 작은 오류 수정하기",
           "effects": {
             "inquiry": 1,
-            "making": 1,
-            "study": 1
+            "making": 1
           },
           "feedback": "작은 수정이었지만 변경 이유를 다른 사람에게 설명해봤다.",
           "experience": {
@@ -531,7 +515,7 @@
           "label": "주말 하루는 비워두기",
           "effects": {
             "relations": 2,
-            "mental": 2,
+            "mental": 1,
             "money": -1
           },
           "feedback": "취업 얘기를 잠시 멈추고 나를 소개하는 시간을 보냈다."
@@ -541,8 +525,7 @@
           "label": "할 일 끝내고 저녁에 만나기",
           "effects": {
             "study": 1,
-            "relations": 1,
-            "mental": 1
+            "relations": 1
           },
           "feedback": "낮에는 공부하고 저녁에는 약속을 지켰다. 은근히 바쁜 하루였다."
         },
@@ -551,6 +534,7 @@
           "label": "이번 주는 어렵다고 솔직하게 말하기",
           "effects": {
             "study": 2,
+            "relations": 1,
             "mental": -1
           },
           "feedback": "마음을 숨기기보다 일정을 설명했다. 다음 약속은 조금 더 용기가 필요하다."
@@ -569,6 +553,7 @@
           "label": "남은 팀원끼리 파트를 나눠 발표하기",
           "effects": {
             "teamwork": 2,
+            "inquiry": 1,
             "mental": -1
           },
           "feedback": "완벽하진 않았지만 서로 다음 슬라이드를 넘겨가며 마무리했다."
@@ -577,8 +562,8 @@
           "id": "missing41_b",
           "label": "내가 전체 흐름을 잡고 발표 맡기",
           "effects": {
-            "teamwork": 1,
-            "study": 1,
+            "teamwork": 2,
+            "study": 2,
             "mental": -2
           },
           "feedback": "목소리는 떨렸지만 질문까지 받았다. 오늘의 점심은 팀원이 샀다."
@@ -587,7 +572,7 @@
           "id": "missing41_c",
           "label": "교수님께 상황을 설명하고 순서 변경 요청하기",
           "effects": {
-            "inquiry": 1,
+            "inquiry": 2,
             "teamwork": 1,
             "relations": -1
           },
@@ -607,8 +592,8 @@
           "label": "수리 맡기고 학교 PC실에서 작업하기",
           "effects": {
             "money": -2,
-            "making": 1,
-            "mental": -1
+            "making": 2,
+            "study": 2
           },
           "feedback": "PC실 영업시간을 외우게 됐다. 자료 백업의 소중함도 함께 배웠다."
         },
@@ -616,7 +601,7 @@
           "id": "laptop41_b",
           "label": "친구에게 노트북을 잠깐 빌리기",
           "effects": {
-            "relations": 1,
+            "relations": 2,
             "teamwork": 1,
             "mental": -1
           },
@@ -627,6 +612,7 @@
           "label": "저장장치 문제부터 차근차근 확인하기",
           "effects": {
             "inquiry": 2,
+            "making": 1,
             "mental": -1
           },
           "feedback": "원인을 좁히고 필요한 수리만 맡겼다. 마감은 새벽까지 이어졌다."
@@ -675,8 +661,7 @@
           "label": "작동하는 범위와 한계를 명확히 설명하기",
           "effects": {
             "inquiry": 1,
-            "teamwork": 1,
-            "mental": 1
+            "teamwork": 1
           },
           "feedback": "문제와 원인을 숨기지 않고 시연 범위를 조정했다.",
           "experience": {
@@ -699,8 +684,7 @@
           "label": "축하하고 준비 과정도 물어보기",
           "effects": {
             "relations": 1,
-            "inquiry": 1,
-            "mental": 1
+            "inquiry": 1
           },
           "feedback": "비교 대신 질문을 골랐다. 막연했던 준비 과정이 조금 구체적으로 보였다."
         },
@@ -709,7 +693,7 @@
           "label": "오늘은 알림을 끄고 내 할 일 정리하기",
           "effects": {
             "study": 1,
-            "mental": 2
+            "mental": 1
           },
           "feedback": "내가 할 수 있는 일 세 개만 적었다. 마음이 조금 가벼워졌다."
         },
@@ -736,7 +720,7 @@
           "id": "interview42_a",
           "label": "담당자에게 알리고 휴대폰으로 먼저 접속하기",
           "effects": {
-            "teamwork": 1,
+            "teamwork": 2,
             "inquiry": 1,
             "mental": -1
           },
@@ -756,7 +740,7 @@
           "label": "남은 시간에 첫 답변부터 정리하기",
           "effects": {
             "study": 1,
-            "mental": -1
+            "mental": 1
           },
           "feedback": "접속 문제는 해결됐고 자기소개는 예상보다 차분하게 나왔다."
         }
@@ -784,7 +768,7 @@
           "label": "근교 당일치기 코스를 제안하기",
           "effects": {
             "relations": 1,
-            "mental": 1,
+            "mental": 2,
             "money": -1
           },
           "feedback": "멀리 가지 않아도 이야기할 시간은 충분했다."
@@ -806,129 +790,168 @@
     {
       "id": "software",
       "label": "소프트웨어·플랫폼 개발 계열",
-      "description": "사람들이 쓰는 서비스를 만들고, 기능을 안정적으로 연결하며 개선하는 일을 해요.",
+      "title": "AI 에이전트 엔지니어",
+      "description": "AI가 계획만 세우는 데서 그치지 않고, 실제 도구를 써서 일을 끝내도록 만드는 개발자예요. 모델과 서비스 사이를 연결하고, 실패 원인을 찾아 더 믿을 수 있게 만들어요.",
       "jobs": [
         {
-          "id": "platform",
-          "company": "루프랩",
-          "title": "플랫폼 개발 엔지니어",
-          "description": "캠퍼스 생활 서비스의 기능을 함께 만드는 팀입니다.",
+          "id": "upstage-agents",
+          "company": "업스테이지",
+          "title": "AI Engineer - Agents",
+          "description": "AI 에이전트를 실제 서비스로 만들고 실행·평가·운영 체계를 개발하는 직무예요.",
           "tasks": [
-            "서비스 기능 개발과 오류 개선",
-            "팀원과 코드 리뷰·작업 내용 공유"
+            "AI 에이전트 실행 시스템과 서비스 개발",
+            "벤치마크·회귀 테스트와 배포·모니터링 자동화"
           ],
           "skills": [
-            "한 가지 언어로 기능을 만들어본 경험",
-            "문제를 재현하고 설명하는 태도"
+            "API 설계·테스트·배포 등 서비스 개발 경험",
+            "Rust·Go·Python 등 한 언어를 깊이 사용한 경험",
+            "에이전트 로그·추적·지표 설계와 운영 경험"
           ],
           "conditions": [
-            "신입·졸업예정자",
-            "팀·개인 프로젝트 경험 소개 가능"
-          ]
+            "경력 무관",
+            "정규직",
+            "관련 분야 학사 또는 그에 준하는 실무 경험"
+          ],
+          "url": "https://careers.upstage.ai/ko/o/194880",
+          "checkedAt": "2026-11-02",
+          "deadline": null,
+          "deadlineLabel": "마감일 미기재 · 접수 중"
         },
         {
-          "id": "service-intern",
-          "company": "모먼트 스튜디오",
-          "title": "서비스 개발 인턴",
-          "description": "작은 아이디어를 사람들이 써볼 수 있는 서비스로 만듭니다.",
+          "id": "timely-backend",
+          "company": "타임리 AI",
+          "title": "Timely AI - 백엔드 개발자",
+          "description": "조직용 AI 서비스에 인증·권한·API와 LLM·RAG 기능을 연결해요.",
           "tasks": [
-            "웹 서비스 화면·기능 구현",
-            "사용자 의견을 바탕으로 개선"
+            "서비스 API와 인증·권한 체계 개발",
+            "LLM·RAG·에이전트 기능 적용과 비동기 처리"
           ],
           "skills": [
-            "웹 또는 앱 제작 경험",
-            "협업 과정과 맡은 역할을 설명할 수 있는 분"
+            "TypeScript·Node.js와 NestJS 또는 Express 사용 경험",
+            "PostgreSQL 등 데이터 모델링·운영 경험",
+            "Git 협업·코드 리뷰·테스트 경험"
           ],
           "conditions": [
-            "체험형 인턴",
-            "학부 재학생·졸업예정자"
-          ]
+            "경력 1년 이상",
+            "정규직 · 타임리 AI 소속",
+            "원격 또는 대구 오피스 근무 협의"
+          ],
+          "url": "https://careers.upstage.ai/ko/o/235255",
+          "checkedAt": "2026-11-02",
+          "deadline": null,
+          "deadlineLabel": "마감일 미기재 · 접수 중"
         }
       ]
     },
     {
       "id": "data",
       "label": "데이터·AI 계열",
-      "description": "데이터에서 의미를 찾고, 분석이나 AI 기능으로 서비스의 문제를 풀어가는 일을 해요.",
+      "title": "AI 평가·실험 엔지니어",
+      "description": "AI가 얼마나 잘하는지, 어떤 상황에서 틀리는지 실험으로 밝혀내는 일을 해요. 평가 도구와 데이터를 만들고, 결과를 분석해 다음 모델의 방향을 제안해요.",
       "jobs": [
         {
-          "id": "data-intern",
-          "company": "인사이트 테이블",
-          "title": "데이터 분석 인턴",
-          "description": "사용자의 서비스 이용 흐름을 데이터로 살펴봅니다.",
+          "id": "upstage-evaluation",
+          "company": "업스테이지",
+          "title": "[독파모] AI Research Engineer - LLM Evaluation & Analysis",
+          "description": "언어모델과 에이전트의 강점·실패를 분석하고 평가 도구를 개발해요.",
           "tasks": [
-            "데이터 정리와 기초 분석",
-            "분석 결과를 표·그림·문장으로 설명"
+            "모델·에이전트 벤치마크와 평가 도구 연구·개발",
+            "평가 자동화와 결과 수집·분석 시스템 개선"
           ],
           "skills": [
-            "스프레드시트·SQL·Python 중 하나의 사용 경험",
-            "결과의 근거와 한계를 설명하는 태도"
+            "AI 평가·분석 관련 국제 학회 논문 경험을 중점적으로 검토",
+            "또는 ML·NLP 국제 학회 논문 제1저자·교신저자 경험",
+            "가설에 따른 실험 설계와 결과 분석 역량"
+          ],
+          "conditions": [
+            "경력 무관",
+            "정규직",
+            "연구·논문 경험을 요구하는 직무"
+          ],
+          "url": "https://careers.upstage.ai/ko/o/217109",
+          "checkedAt": "2026-11-02",
+          "deadline": null,
+          "deadlineLabel": "마감일 미기재 · 접수 중"
+        },
+        {
+          "id": "upstage-posttraining",
+          "company": "업스테이지",
+          "title": "[독파모] AI Research Engineer - Post-training Internship (체험형)",
+          "description": "후학습과 데이터 실험으로 모델의 추론·도구 사용 능력을 개선해요.",
+          "tasks": [
+            "강화학습과 후학습을 통한 모델 능력 개선",
+            "에이전트 학습용 데이터 합성과 실험"
+          ],
+          "skills": [
+            "LLM·VLM 후학습·파인튜닝으로 성능을 개선한 경험",
+            "Foundation Model 개발 동향 이해",
+            "ML·NLP 국제 학회 제1저자 또는 교신저자 출판 기록"
           ],
           "conditions": [
             "체험형 인턴",
-            "수업·개인 분석 프로젝트 소개 가능"
-          ]
-        },
-        {
-          "id": "ai-intern",
-          "company": "노바 인텔리전스",
-          "title": "AI 서비스 개발 인턴",
-          "description": "모델 자체보다 실제로 써볼 수 있는 AI 기능에 집중합니다.",
-          "tasks": [
-            "데이터·모델 결과 확인",
-            "간단한 AI 기능 연결과 실험 기록"
+            "3~6개월 · 전일제, 학업 병행 불가",
+            "경력 무관 · 연구·논문 경험 필수"
           ],
-          "skills": [
-            "Python 또는 서비스 제작 경험",
-            "실험 결과를 정리하는 습관"
-          ],
-          "conditions": [
-            "학부 재학생·졸업예정자",
-            "관련 프로젝트 경험 우대"
-          ]
+          "url": "https://careers.upstage.ai/ko/o/194853",
+          "checkedAt": "2026-11-02",
+          "deadline": null,
+          "deadlineLabel": "마감일 미기재 · 접수 중"
         }
       ]
     },
     {
       "id": "infrastructure",
       "label": "클라우드·인프라 계열",
-      "description": "서비스가 끊기지 않도록 실행 환경을 관리하고, 문제가 생겼을 때 원인을 찾아 개선하는 일을 해요.",
+      "title": "AI 인프라 자동화 엔지니어",
+      "description": "AI가 돌아갈 GPU와 서버 환경을 연결하고, 복잡한 설치·배포를 자동화하는 일을 해요. 개발자가 모델과 제품에 집중할 수 있는 기반을 만들어요.",
       "jobs": [
         {
-          "id": "cloud",
-          "company": "브릿지 클라우드",
-          "title": "주니어 클라우드 엔지니어",
-          "description": "작은 팀의 서비스 운영 환경을 함께 관리합니다.",
+          "id": "upstage-enterprise-intern",
+          "company": "업스테이지",
+          "title": "AI Solution Architect & Engineer Internship - Enterprise (정규직 전환형)",
+          "description": "AI 제품의 설치·점검·운영을 돕는 도구와 자동화를 개발하는 인턴이에요.",
           "tasks": [
-            "서비스 배포 환경 구성 지원",
-            "로그 확인과 장애 원인 정리"
+            "설치·점검 스크립트와 모니터링 대시보드 개발",
+            "AI 제품 설치 재현과 모델 서빙·GPU 운영 지원"
           ],
           "skills": [
-            "운영체제·네트워크의 기초 이해",
-            "서비스를 배포해본 경험"
+            "개인·팀·수업에서 프로그램을 직접 만든 경험",
+            "Git·Linux·Docker 사용 경험",
+            "HTTP·REST API 기본 이해"
           ],
           "conditions": [
-            "신입·졸업예정자",
-            "실습·수업 프로젝트 소개 가능"
-          ]
+            "전환형 인턴",
+            "경력 무관",
+            "전일제 근무 · 학업 병행 불가"
+          ],
+          "url": "https://careers.upstage.ai/ko/o/194868",
+          "checkedAt": "2026-11-02",
+          "deadline": null,
+          "deadlineLabel": "마감일 미기재 · 접수 중"
         },
         {
-          "id": "infra-intern",
-          "company": "스테이블 웍스",
-          "title": "인프라 운영 인턴",
-          "description": "안정적인 서비스 운영을 위한 기본기를 익힙니다.",
+          "id": "upstage-platform",
+          "company": "업스테이지",
+          "title": "Platform Software Engineer",
+          "description": "개발자용 플랫폼과 GPU·Kubernetes 기반 AI 실행 환경을 만들어요.",
           "tasks": [
-            "운영 체크리스트와 모니터링 확인",
-            "반복 작업 정리·자동화 보조"
+            "개발자 셀프서비스 플랫폼과 배포 환경 개선",
+            "GPU 스케줄링·관측성·인프라 자동화"
           ],
           "skills": [
-            "Linux 또는 네트워크 실습 경험",
-            "문제를 기록하고 팀에 전달하는 태도"
+            "클라우드 서비스 운영·장애 대응 경험",
+            "Kubernetes와 Terraform·Ansible 활용 경험",
+            "내부 개발자의 문제를 정의하고 해결하는 역량"
           ],
           "conditions": [
-            "체험형 인턴",
-            "학부 재학생 지원 가능"
-          ]
+            "경력 무관",
+            "정규직",
+            "대규모 서비스·클라우드 운영 경험 필요"
+          ],
+          "url": "https://careers.upstage.ai/ko/o/204306",
+          "checkedAt": "2026-11-02",
+          "deadline": null,
+          "deadlineLabel": "마감일 미기재 · 접수 중"
         }
       ]
     }

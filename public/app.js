@@ -1,12 +1,12 @@
-import { createGame, choose, advance, rollGrade } from './game.js';
+import { INITIAL_GPA, createGame, choose, advance, rollGrade } from './game.js';
 import { createTracker, readLocal, writeLocal, makeId } from './tracking.js';
 
 const app = document.querySelector('#app');
 let content, state, tracker, recording = false;
-let profile = { gender: '', mbti: '', surname: '', givenName: '' };
+let profile = { gender: '', surname: '', givenName: '' };
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const nameLabel = () => escape(state.profile.name);
-const profileLabel = () => `${content.profile.genders.find(item => item.id === state.profile.gender).label} · ${state.profile.mbti}`;
+const profileLabel = () => content.profile.genders.find(item => item.id === state.profile.gender).label;
 const semesterLabel = item => `${item.year}학년 ${item.semester}학기`;
 const gpaLabel = value => Number(value).toFixed(2);
 
@@ -25,28 +25,34 @@ function showStart() {
     <form id="profile-form" class="setup-card"><div class="section-heading"><h2>나의 학생 프로필</h2><span>01 / START</span></div><p class="muted setup-description">키워보고 싶은 가상 컴공생을 설정해주세요.</p>
     <div class="name-fields"><div><label class="field-label" for="surname">성 <span>선택</span></label><input id="surname" name="surname" maxlength="12" placeholder="김" value="${escape(profile.surname)}" autocomplete="off"></div><div><label class="field-label" for="given-name">이름 <span>선택</span></label><input id="given-name" name="givenName" maxlength="20" placeholder="컴공" value="${escape(profile.givenName)}" autocomplete="off"></div></div><p class="field-note">비워둔 칸은 ‘김’과 ‘컴공’으로 채워져요.</p>
     <fieldset><legend>캐릭터 성별 <span>필수</span></legend><div class="gender-options">${content.profile.genders.map(gender => `<label class="gender-option"><input type="radio" name="gender" value="${gender.id}" ${profile.gender === gender.id ? 'checked' : ''} required><span>${escape(gender.label)}</span></label>`).join('')}</div></fieldset>
-    <label class="field-label" for="mbti">캐릭터 MBTI <span>필수</span></label><select id="mbti" name="mbti" required><option value="">유형을 선택해주세요</option>${content.profile.mbti.map(type => `<option value="${type}" ${profile.mbti === type ? 'selected' : ''}>${type}</option>`).join('')}</select><p class="profile-note">성별과 MBTI는 프로필에만 표시돼요.</p>
-    <div class="starting-grade"><div><span>지금까지의 누적 학점</span><strong>3.00 <small>/ 4.5</small></strong></div><p>1~2학년을 마쳤어요.<br>이제 3학년 1학기를 시작해요.</p></div>
-    <button class="primary" id="start-button" ${profile.gender && profile.mbti ? '' : 'disabled'}>3학년 시작하기 <span aria-hidden="true">→</span></button><p class="setup-hint" id="setup-hint" aria-live="polite">${profile.gender && profile.mbti ? '준비 완료! 다시 대학 생활을 만들어보세요.' : '성별과 MBTI를 고르면 시작할 수 있어요.'}</p></form>
+    <div class="starting-grade"><div><span>지금까지의 누적 학점</span><strong>${gpaLabel(INITIAL_GPA)} <small>/ 4.5</small></strong></div><p>1~2학년을 마쳤어요.<br>이제 3학년 1학기를 시작해요.</p></div>
+    <button class="primary" id="start-button" ${profile.gender ? '' : 'disabled'}>3학년 시작하기 <span aria-hidden="true">→</span></button><p class="setup-hint" id="setup-hint" aria-live="polite">${profile.gender ? '준비 완료! 다시 대학 생활을 만들어보세요.' : '성별을 고르면 시작할 수 있어요.'}</p></form>
     <p class="local-notice">${recording ? '방문·플레이 흐름은 익명으로 기록돼요.' : '미리보기 · 현재는 체험 기록과 의견을 저장할 수 없어요.'}</p></section>`;
   const form = document.querySelector('#profile-form');
   form.addEventListener('input', () => {
     const data = new FormData(form);
-    profile = Object.fromEntries(['surname', 'givenName', 'gender', 'mbti'].map(key => [key, data.get(key) || '']));
-    const ready = Boolean(profile.gender && profile.mbti);
+    profile = Object.fromEntries(['surname', 'givenName', 'gender'].map(key => [key, data.get(key) || '']));
+    const ready = Boolean(profile.gender);
     document.querySelector('#start-button').disabled = !ready;
-    document.querySelector('#setup-hint').textContent = ready ? '준비 완료! 나만의 3학년을 시작해보세요.' : '성별과 MBTI를 고르면 시작할 수 있어요.';
+    document.querySelector('#setup-hint').textContent = ready ? '준비 완료! 나만의 3학년을 시작해보세요.' : '성별을 고르면 시작할 수 있어요.';
   });
   form.addEventListener('submit', event => {
     event.preventDefault(); if (!form.reportValidity()) return;
     state = { ...createGame(content, profile), runId: makeId() };
-    tracker.event('start', { run_id: state.runId, gender: profile.gender, mbti: profile.mbti });
+    tracker.event('start', { run_id: state.runId, gender: profile.gender });
     showPlay(); focusHeading();
   });
 }
 
 function direction(effects) {
-  return Object.entries(effects).map(([id, effect]) => `<span class="effect ${effect > 0 ? 'positive' : 'negative'}">${escape(content.stats.find(stat => stat.id === id).label)} ${effect > 0 ? '↑' : '↓'}</span>`).join('');
+  return Object.entries(effects).map(([id, effect]) => `<span class="effect ${effect > 0 ? 'positive' : 'negative'}" aria-label="${escape(content.stats.find(stat => stat.id === id).label)} ${effect > 0 ? '+' : ''}${effect}">${escape(content.stats.find(stat => stat.id === id).label)} ${(effect > 0 ? '↑' : '↓').repeat(Math.abs(effect))}</span>`).join('');
+}
+
+function gradeChart() {
+  const grades = [{ label: '2학년 말', gpa: INITIAL_GPA }, ...state.grades.map(item => ({ label: `${item.year}-${item.semester}`, gpa: item.gpa }))];
+  const points = grades.map((item, index) => ({ ...item, x: 24 + index * 78, y: 88 - (item.gpa - 3.3) / 1.2 * 64 }));
+  const description = grades.map(item => `${item.label} ${gpaLabel(item.gpa)}`).join(', ');
+  return `<div class="gpa-chart"><svg viewBox="0 0 360 120" role="img" aria-label="누적 학점 변화: ${description}"><line class="gpa-baseline" x1="24" y1="99" x2="336" y2="99"/><polyline class="gpa-line" points="${points.map(item => `${item.x},${item.y}`).join(' ')}"/>${points.map(item => `<circle class="gpa-point" cx="${item.x}" cy="${item.y}" r="3"/><text class="gpa-value" x="${item.x}" y="${item.y - 12}">${gpaLabel(item.gpa)}</text><text class="gpa-term" x="${item.x}" y="117">${item.label}</text>`).join('')}</svg></div>`;
 }
 
 function showPlay() {
@@ -104,18 +110,18 @@ function showResult() {
   const career = state.career;
   app.innerHTML = `<section class="result-screen"><p class="eyebrow">MY NEXT CHAPTER</p><div class="graduation-heading"><h1 tabindex="-1">대학 생활이<br>한 장의 이력서가 되었어요.</h1><p class="muted">12번의 선택으로 남긴 ${nameLabel()}의 기록</p></div>
     <article class="resume" aria-labelledby="resume-title"><div class="resume-top"><div><p class="resume-kicker">CURRICULUM VITAE</p><h2 id="resume-title">${nameLabel()}</h2><p>컴퓨터공학 전공 · 졸업</p></div><span class="resume-seal">CLASS<br>COMPLETE</span></div>
-    <section class="resume-section"><h3>학력</h3><div class="resume-education"><div><strong>컴퓨터공학 학사</strong><p>4학년 2학기 수료</p></div><div class="resume-gpa"><strong>${gpaLabel(state.gpa)}</strong><span> / 4.5</span></div></div><div class="resume-grades"><span>2학년까지 <strong>3.00</strong></span>${state.grades.map(item => `<span>${item.year}-${item.semester} <strong>${gpaLabel(item.gpa)}</strong></span>`).join('')}</div></section>
+    <section class="resume-section"><h3>학력</h3><div class="resume-education"><div><strong>컴퓨터공학 학사</strong><p>4학년 2학기 수료</p></div><div class="resume-gpa"><strong>${gpaLabel(state.gpa)}</strong><span> / 4.5</span></div></div>${gradeChart()}</section>
     <section class="resume-section"><h3>경험 · 프로젝트</h3>${state.experiences.length ? state.experiences.map(item => `<div class="resume-experience"><div><span>${item.year}-${item.semester} · ${escape(item.type)}</span><h4>${escape(item.title)}</h4><p>${escape(item.detail)}</p></div></div>`).join('') : '<p>아직 등록한 경험이 없어요.</p>'}</section><p class="resume-footnote">대학 생활 게임에서 만든 캐릭터 이력서</p></article>
     <details class="history"><summary>내 선택과 성장 보기 <span>12개의 순간</span></summary>${statsPanel()}<ol>${state.history.map(entry => `<li><span>${entry.year}-${entry.semester}</span><p>${escape(entry.label)}</p></li>`).join('')}</ol></details>
-    <section class="career-card"><p class="eyebrow">CAREER PATH</p><h2>졸업 후 추천 진로</h2><h3>${escape(career.label)}</h3><p>${escape(career.description)}</p></section>
-    <section class="jobs" aria-labelledby="jobs-title"><div class="section-heading"><h2 id="jobs-title">이런 모집을 살펴보세요</h2><span>2 POSITIONS</span></div>${career.jobs.map(job => `<article class="job-card"><div class="job-top"><span>${escape(job.company)}</span><span class="badge">${escape(job.conditions[0])}</span></div><h3>${escape(job.title)}</h3><p>${escape(job.description)}</p><button class="job-link" data-job="${job.id}">모집 상세 보기 <span aria-hidden="true">↗</span></button></article>`).join('')}<p class="muted jobs-note">진로 탐색을 위한 가상의 기업·모집 예시예요.</p></section>
+    <section class="career-card"><p class="eyebrow">CAREER PATH</p><h2>졸업 후 추천 진로</h2><p class="career-family">${escape(career.label)}</p><h3>${escape(career.title)}</h3><p>${escape(career.description)}</p></section>
+    <section class="jobs" aria-labelledby="jobs-title"><div class="section-heading"><h2 id="jobs-title">이런 모집을 살펴보세요</h2><span>${career.jobs.length} POSITIONS</span></div>${career.jobs.map(job => `<article class="job-card"><div class="job-top"><span>${escape(job.company)}</span><span class="badge">${escape(job.conditions[0])}</span></div><h3>${escape(job.title)}</h3><p>${escape(job.description)}</p><p class="job-date">${escape(job.deadlineLabel)} · ${escape(job.checkedAt)} 확인</p><button class="job-link" data-job="${job.id}">모집 상세 보기 <span aria-hidden="true">↗</span></button></article>`).join('')}<p class="muted jobs-note">기업 채용 페이지에서 확인한 실제 공고예요. 최신 접수 여부와 자세한 조건은 원문에서 확인해주세요.</p></section>
     <section class="suggestions" aria-labelledby="feedback-title"><h2 id="feedback-title">어떤 대학 생활이었나요?</h2><p class="muted">기억에 남은 순간이나 더 있었으면 하는 이야기를 남겨주세요.</p><form id="feedback-form"><label for="feedback-text" class="sr-only">의견 (선택)</label><textarea id="feedback-text" maxlength="1000" rows="4" placeholder="연애 사건이 더 있었으면 좋겠어요…" aria-describedby="feedback-limit"></textarea>
     <label class="field-label email-label" for="feedback-email">이메일 <span>선택 · 입력하지 않아도 돼요</span></label><input id="feedback-email" name="email" type="email" maxlength="254" placeholder="name@example.com" autocomplete="email"><div class="feedback-actions"><span id="feedback-limit"><span id="character-count">0</span> / 1,000자</span><button class="secondary" id="send-feedback" type="submit">보내기 <span aria-hidden="true">↗</span></button></div><p id="feedback-status" class="form-status" role="status">의견이나 이메일 중 하나만 남겨도 괜찮아요.</p></form></section>
     <button class="secondary replay-button" id="replay-button">다른 대학 생활 만들어보기 <span aria-hidden="true">↻</span></button><dialog id="job-dialog" aria-labelledby="job-detail-title"></dialog></section>`;
   document.querySelectorAll('[data-job]').forEach(button => button.addEventListener('click', () => {
     const job = career.jobs.find(item => item.id === button.dataset.job); tracker.event('job_click', { run_id: state.runId, job_id: job.id });
     const dialog = document.querySelector('#job-dialog');
-    dialog.innerHTML = `<div class="dialog-heading"><span class="badge">모집 예시</span><button class="secondary" id="close-job" aria-label="모집 상세 닫기">닫기</button></div><p class="muted">${escape(job.company)}</p><h2 id="job-detail-title">${escape(job.title)}</h2><p>${escape(job.description)}</p>${[['하는 일', job.tasks], ['필요 역량', job.skills], ['모집 조건', job.conditions]].map(([title, list]) => `<h3>${title}</h3><ul>${list.map(item => `<li>${escape(item)}</li>`).join('')}</ul>`).join('')}<p class="jobs-note muted">게임에서 제공하는 가상 모집 예시입니다.</p>`;
+    dialog.innerHTML = `<div class="dialog-heading"><span class="badge">실제 모집</span><button class="secondary" id="close-job" aria-label="모집 상세 닫기">닫기</button></div><p class="muted">${escape(job.company)}</p><h2 id="job-detail-title">${escape(job.title)}</h2><p>${escape(job.description)}</p>${[['하는 일', job.tasks], ['필요 역량', job.skills], ['모집 조건', job.conditions]].map(([title, list]) => `<h3>${title}</h3><ul>${list.map(item => `<li>${escape(item)}</li>`).join('')}</ul>`).join('')}<a class="job-link" href="${escape(job.url)}" target="_blank" rel="noopener noreferrer">기업 공고 원문 보기 <span aria-hidden="true">↗</span></a><p class="jobs-note muted">${escape(job.checkedAt)} 원문 확인 · ${escape(job.deadlineLabel)}. 모집 내용은 원문의 핵심을 요약했어요.</p>`;
     dialog.showModal(); document.querySelector('#close-job').addEventListener('click', () => dialog.close());
   }));
   const textarea = document.querySelector('#feedback-text'), email = document.querySelector('#feedback-email'); let pending;
