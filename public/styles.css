@@ -220,6 +220,16 @@ dialog .jobs-note{border-top:1px solid var(--line);padding-top:16px;margin-top:2
 .home-actions .primary,.home-actions .secondary{width:100%;min-height:60px;font-size:17px}
 .home-actions .secondary{display:flex;justify-content:space-between;align-items:center}
 .home-actions p{color:var(--muted);font-size:12px;margin:8px 4px 0}
+.participation-counts{margin-top:4px}
+.count-periods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.count-period{padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.count-period h2{font-size:12px;color:var(--muted);margin-bottom:7px}
+.count-period dl{margin:0}
+.count-period dl>div{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.count-period dt{font-size:12px;color:#bac5cf}
+.count-period dd{margin:0;color:var(--accent);font-size:clamp(16px,4vw,22px);font-variant-numeric:tabular-nums}
+.count-period dd small{font-size:11px;color:var(--muted);margin-left:3px}
+.counts-note{font-size:11px;color:var(--muted);margin:8px 2px 0}
 .setup-card{margin-top:24px}
 .starting-grade{margin-top:24px}
 .text-button{display:block;margin:18px auto;border:0;background:none;color:var(--muted);padding:10px}

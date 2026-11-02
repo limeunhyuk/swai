@@ -3,7 +3,7 @@ import { campaignByCode } from '../public/campaigns.js';
 
 // 기존 URL/JSON 기록과 열을 분리한 새 기록을 함께 읽는다. 과거 행을 수정하지 않는다.
 export function decodeLegacyRows(visits, feedback) {
-  const fromColumns = row => ({ visitor_id: row.id, visit_id: row['방문ID'], run_id: row['게임ID'], source: row.utm,
+  const fromColumns = row => ({ visitor_id: row.id, visit_id: row['방문ID'], run_id: row['게임ID'], source: row.utm, occurred_at: row.time_stamp,
     mode: row['진행방식'] === '예시' ? 'instant' : 'game', event_type: Object.keys(EVENT_LABELS).find(key => EVENT_LABELS[key] === row['단계']),
     campaign_code: row['홍보코드'] || '', board: row['게시판코드'] || '', posted_date: row['게시일'] || '', posted_time: row['게시시각'] || '',
     post_url: row['홍보글URL'] || '', content_version: row['콘텐츠버전'], choice_id: row['선택ID'] || '', job_id: row['공고ID'] || '',
@@ -17,7 +17,7 @@ export function decodeLegacyRows(visits, feedback) {
       const query = new URL(row.landingUrl).searchParams;
       if (query.get('swai_v') !== '2' || !query.get('event_id')) continue;
       const record = Object.fromEntries(query);
-      events.push({ ...record, source: row.utm, visitor_id: row.id, is_test: query.get('is_test') === 'true' });
+      events.push({ ...record, source: row.utm, visitor_id: row.id, occurred_at: row.time_stamp, is_test: query.get('is_test') === 'true' });
     } catch { /* 예전 아이디어 기록·일반 URL은 새 실험에 합치지 않는다. */ }
   }
   const comments = [];

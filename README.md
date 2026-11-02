@@ -29,11 +29,15 @@ HTML·CSS·JavaScript와 사전 작성 콘텐츠로 구성한다. DB·AI 추천 
 
 ## 홍보 링크
 
+홈에는 한국 시간 기준 오늘·누적 방문자 수와 학생 수를 표시한다. 방문자는 브라우저 ID 기준 중복을 제외하고, 학생은 게임을 새로 시작한 실행 수다. 예시는 학생 수에 넣지 않고 테스트 TRUE 기록만 제외한다. 기존 FALSE 테스트는 사용자 요청에 따라 수정하지 않는다. 숫자만 반환하는 `/.netlify/functions/stats`가 기존 tab_master를 읽으며 Netlify CDN에서 최대 60초 캐시한다. 시트 원자료·IP·ID는 공개 응답에 포함하지 않는다. 읽기 실패는 0명으로 꾸미지 않고 불러오기 실패로 표시한다.
+
 `/d1`, `/f1`, `/e1`, `/a1`, `/k1` 같은 주소에서 같은 홈을 제공한다. 시트 UTM은 dc/fm/ev/ar/ka, 별도 홍보코드는 게시물별로 구분한다. 기존 `/c1`은 `/k1`과 같은 코드로 연결하며 `/r/e01` 등과 utm/utm_source도 유지한다. 짧은 경로가 쿼리보다 우선하며 미등록 코드는 unregistered로 분류한다. 전달된 링크는 원래 배포 코드로 집계된다.
 
 [PROMOTION.md](PROMOTION.md)에 15개 후보+카카오톡과 기존 예약 코드를 정리했다. 실제 게시 이력은 아니다. 카카오톡 대화방 이름은 미지정이다. 새 글에는 새 코드를 예약하고, 실제 게시 후 한국 날짜·시각·원문 주소를 등록한다. 기존 글 수정은 같은 링크를 쓴다. 등록 변경은 commit/push해 반영한다.
 
-예약: `node scripts/add-campaign.mjs d5 dcinside web-game - - 2`
+예약: `node scripts/add-campaign.mjs d6 dcinside web-game - - 2`
+
+웹게임 개발 갤러리는 `/d5`(dc/web-game-dev)로 별도 예약했다. 기존 웹게임 갤러리 `/d1`과 구분한다.
 
 게시 후: `node scripts/add-campaign.mjs d1 dcinside web-game YYYYMMDD HHmm 1 https://홍보글주소`
 

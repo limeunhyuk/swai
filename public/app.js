@@ -4,6 +4,7 @@ import { createTracker, readLocal, writeLocal, makeId } from './tracking.js';
 const app = document.querySelector('#app');
 let content, state, tracker, recording = false;
 let instantTimer, gradeTimer;
+let participation, participationFailed = false, participationLoading = false, participationFetchedAt = 0;
 let profile = { surname: '', givenName: '' };
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const nameLabel = () => escape(state.profile.name);
@@ -11,6 +12,27 @@ const profileLabel = () => content.careers.find(item => item.id === state.direct
 const semesterLabel = item => `${item.year}학년 ${item.semester}학기`;
 const gpaLabel = value => Number(value).toFixed(2);
 const track = (type, extra = {}) => tracker.event(type, { run_id: state.runId, mode: state.mode, ...extra });
+
+function participationPanel() {
+  const number = (period, key) => participation ? participation[period][key].toLocaleString('ko-KR') : '—';
+  return `<section id="participation-counts" class="participation-counts" aria-label="오늘과 누적 참여 현황" aria-busy="${!participation && !participationFailed}"><div class="count-periods">${[['today', '오늘'], ['total', '누적']].map(([period, label]) => `<div class="count-period"><h2>${label}</h2><dl><div><dt>방문자</dt><dd>${number(period, 'visitors')}<small>명</small></dd></div><div><dt>학생</dt><dd>${number(period, 'students')}<small>명</small></dd></div></dl></div>`).join('')}</div><p class="counts-note" role="status">${participationFailed ? '참여 현황을 불러오지 못했어요.' : participation ? '학생 수는 게임을 새로 시작한 횟수예요.' : '참여 현황을 불러오는 중이에요.'}</p></section>`;
+}
+
+async function loadParticipation() {
+  if (participationLoading || Date.now() - participationFetchedAt < 60000) return;
+  participationLoading = true;
+  try {
+    const response = await fetch('/.netlify/functions/stats', { signal: AbortSignal.timeout(15000) });
+    const data = await response.json();
+    if (!response.ok || data.ok !== true || !['today', 'total'].every(period => ['visitors', 'students'].every(key => Number.isSafeInteger(data[period]?.[key]) && data[period][key] >= 0))) throw new Error('Counts unavailable');
+    participation = data; participationFailed = false;
+  } catch { participationFailed = true; }
+  finally {
+    participationLoading = false; participationFetchedAt = Date.now();
+    const panel = document.querySelector('#participation-counts');
+    if (panel) panel.outerHTML = participationPanel();
+  }
+}
 
 function statsPanel(changes = {}) {
   return `<section class="stats-panel" aria-label="캐릭터 스탯">${['공부', '생활'].map(group => `<div class="stat-group"><h3>${group}<span>${group === '공부' ? '차곡차곡 쌓은 경험' : '지금의 생활 여력'}</span></h3><div class="stat-grid ${group === '생활' ? 'life' : ''}">${content.stats.filter(stat => stat.group === group).map(stat => {
@@ -27,9 +49,10 @@ function showStart() {
     <p class="intro">3학년의 시작부터 졸업까지.<br>과제도, 연애도, 취업 준비도 내 선택대로.</p>
     <div class="journey"><span class="journey-icon" aria-hidden="true">&lt;/&gt;</span><div><strong>4학기, 8번의 선택</strong><p>대학 생활의 끝에서 나만의 이력서를 만나보세요.</p></div></div>
     <div class="home-actions"><div><button class="primary instant-button" id="instant-button">이력서 즉시 확인 <span aria-hidden="true">↗</span></button><p>예시 이력서와 추천 직무, 실제 채용공고를 바로 확인해요.</p></div><div><button class="secondary" id="setup-button">3학년 시작하기 <span aria-hidden="true">→</span></button><p>8번의 선택으로 나만의 대학 생활과 이력서를 만들어요.</p></div></div>
-    <p class="local-notice">${recording ? '방문·플레이 흐름을 기록해요.' : '미리보기 · 현재는 체험 기록과 의견을 저장할 수 없어요.'}</p></section>`;
+    ${participationPanel()}<p class="local-notice">${recording ? '방문·플레이 흐름을 기록해요.' : '미리보기 · 현재는 체험 기록과 의견을 저장할 수 없어요.'}</p></section>`;
   document.querySelector('#instant-button').addEventListener('click', showInstant);
   document.querySelector('#setup-button').addEventListener('click', () => { showSetup(); focusHeading(); });
+  loadParticipation();
 }
 
 function showSetup() {

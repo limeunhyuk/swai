@@ -201,6 +201,16 @@ export const campaigns = [
     "time": "",
     "sequence": 1,
     "postUrl": ""
+  },
+  {
+    "code": "d5",
+    "platform": "dcinside",
+    "board": "web-game-dev",
+    "date": "",
+    "time": "",
+    "sequence": 1,
+    "postUrl": "",
+    "label": "웹게임 개발 갤러리"
   }
 ];
 
