@@ -211,6 +211,16 @@ export const campaigns = [
     "sequence": 1,
     "postUrl": "",
     "label": "웹게임 개발 갤러리"
+  },
+  {
+    "code": "k2",
+    "platform": "kakao",
+    "board": "chat-unspecified",
+    "date": "",
+    "time": "",
+    "sequence": 2,
+    "postUrl": "",
+    "label": "카카오톡 대화방 미지정"
   }
 ];
 

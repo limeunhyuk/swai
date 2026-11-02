@@ -28,3 +28,4 @@
 | f1 | fm | 인공지능 AI 게시판 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/f1) | 미등록 | 예약·미게시 |
 | k1 | ka | 카카오톡 대화방 미지정 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/k1) | 미등록 | 예약·미게시 |
 | d5 | dc | 웹게임 개발 갤러리 | 미배정 | 미배정 | 1 | [열기](https://savecs.netlify.app/d5) | 미등록 | 예약·미게시 |
+| k2 | ka | 카카오톡 대화방 미지정 | 미배정 | 미배정 | 2 | [열기](https://savecs.netlify.app/k2) | 미등록 | 예약·미게시 |
